@@ -1,0 +1,1472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Understand language in context</title>
+<link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,75..125,400..800;1,75..125,400..800&display=swap">
+<style>
+/* Case study page from portfolio-v4, frame "MacBook Pro 16 - 2" (163:80): a 1728 frame, an 846px reading column,
+   a 1048 x 540 hero slide, and a sticky contents list on the left. Type and colour tokens match the home page. */
+@font-face { font-family: "Ob Wide"; font-weight: 600; font-display: swap; src: url("fonts/ObviouslyDemo-WideSemibold.otf") format("opentype"); }
+@font-face { font-family: "Ob Ext"; font-weight: 700; font-display: swap; src: url("fonts/ObviouslyDemo-ExtendedBold.otf") format("opentype"); }
+@font-face { font-family: "Ob Reg"; font-weight: 400; font-display: swap; src: url("fonts/ObviouslyDemo-Regular.otf") format("opentype"); }
+@font-face { font-family: "Ob Reg"; font-weight: 400; font-style: italic; font-display: swap; src: url("fonts/ObviouslyDemo-RegularItalic.otf") format("opentype"); }
+@font-face { font-family: "Ob Semi"; font-weight: 600; font-display: swap; src: url("fonts/ObviouslyDemo-Semibold.otf") format("opentype"); }
+@font-face { font-family: "Ob Med"; font-weight: 500; font-display: swap; src: url("fonts/ObviouslyDemo-Medium.otf") format("opentype"); }
+@font-face { font-family: "Ob Narrow"; font-weight: 400; font-display: swap; src: url("fonts/ObviouslyDemo-Narrow.otf") format("opentype"); }
+@font-face { font-family: "Ob Narrow"; font-weight: 500; font-display: swap; src: url("fonts/ObviouslyDemo-NarrowMedium.otf") format("opentype"); }
+@font-face { font-family: "Ob Narrow"; font-weight: 600; font-display: swap; src: url("fonts/ObviouslyDemo-NarrowSemibold.otf") format("opentype"); }
+:root {
+  --paper: #ffffff;
+  --ink: #4a3e3e;
+  --dim: #9c9191;
+  --clay: #c9695a;
+  --ph: #d9d9d9;
+  --rule: #e6dedc;
+  --f-wide: "Ob Wide", "Archivo", system-ui, sans-serif;
+  --f-ext: "Ob Ext", "Archivo", system-ui, sans-serif;
+  --f-reg: "Ob Reg", "Archivo", system-ui, sans-serif;
+  --f-narrow: "Ob Narrow", "Archivo", system-ui, sans-serif;
+  --f-semi: "Ob Semi", "Archivo", system-ui, sans-serif;
+  --col: 846px;
+  --pad: 24px;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-reg); -webkit-font-smoothing: antialiased; }
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px auto; opacity: .15; mix-blend-mode: multiply;
+}
+img, video { display: block; max-width: 100%; }
+a { color: inherit; }
+
+/* Page enter: the whole page fades in on arrival (no movement). */
+.page { animation: enter .55s ease both; }
+@keyframes enter { from { opacity: 0; } }
+/* Title on landing, as palantir.com/offerings/life-sciences lights its hero title: every letter flickers
+   up on its own clock (random start, uneven brightness on the way), until all are on after about 1.1s.
+   Driven by script; letters start hidden. */
+.hero h1 .lt { opacity: 0; }
+html.leaving .page { opacity: 0; transform: translateY(-8px); transition: opacity .26s ease, transform .26s ease; }
+
+/* ---------- Top bar: "back" at x 104 / y 80, the blob at the right edge (x 1573 / y 38) ---------- */
+.bar { position: relative; height: 72px; max-width: 3840px; margin: 0 auto; }
+.back {
+  position: fixed; z-index: 50; left: max(var(--margin), env(safe-area-inset-left, 0px)); top: 43.2px; /* baseline on the 64px row line; stays put while the case study scrolls */
+  font-family: var(--f-narrow); font-weight: 500; font-size: 16px; line-height: 25px; letter-spacing: -0.48px;
+  color: var(--dim); text-decoration: none; transition: color .25s ease, transform .35s cubic-bezier(.22, 1, .36, 1);
+  display: inline-flex; align-items: center; gap: 0;
+}
+/* The arrow is drawn (not a font glyph) so it sits exactly on the middle of "back": the letters run from the
+   baseline (20.8px down the 25px line) up to the ascenders (12px above it), so their centre is 14.8px down. */
+.back::before { content: ""; display: block; align-self: stretch; width: 0; opacity: 0; overflow: hidden;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='10' viewBox='0 0 12 10' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 5H1.5M5 1.2 1.2 5 5 8.8'/%3E%3C/svg%3E") no-repeat 0 9.8px / 12px 10px;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='10' viewBox='0 0 12 10' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 5H1.5M5 1.2 1.2 5 5 8.8'/%3E%3C/svg%3E") no-repeat 0 9.8px / 12px 10px;
+  transition: width .3s cubic-bezier(.22, 1, .36, 1), opacity .25s ease; }
+.back:hover { color: var(--ink); }
+.back:hover::before { width: 18px; opacity: 1; }
+.blob { position: fixed; z-index: 50; right: calc(max(var(--margin), env(safe-area-inset-right, 0px)) / var(--k, 1)); top: calc(38px / var(--k, 1)); width: 42px; height: 42px; padding: 1.5px 0 1.6px 2.1px; }
+.blob img { width: 39.6px; height: 38.7px; transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
+.blob:hover img { transform: scale(1.08); }
+/* Everything below is the home page's blob, so it looks and behaves the same here. */
+/* Invisible hit area: 32px of extra hover and tap room on every side of the blob, at every size
+   (divided by k because the blob itself is scaled by k). */
+.blob::before { content: ""; position: absolute; inset: calc(-32px / var(--k, 1)); border-radius: 50%; }
+/* Same size as on the home page: there the blob shrinks with the type by a factor k (see the script). */
+.blob { zoom: var(--k, 1); }
+.blob .tip { zoom: calc(1 / var(--k, 1)); }
+/* Hover tooltip: a small pane of the same frosted glass as the slide frames, ink type in the wide cut,
+   with the shortcut in a clay-tinted key. It drops in from the blob, anchored to the right edge so it never runs off screen. */
+.tip {
+  position: absolute; top: calc(100% + 12px); right: -6px; z-index: 5; display: flex; align-items: center; gap: 8px;
+  padding: 6.5px 6.5px 6.5px 13.5px; border-radius: 999px; white-space: nowrap; pointer-events: none;   /* +0.5px each side for the removed outline */
+  /* Glass: a thin, top-lit white wash over a strong blur, so whatever sits behind shows through softened,
+     a bright rim along the top edge and a fainter one along the bottom, plus Figma UI3 light/elevation-100. */
+  /* Coloured glass: a faint clay tint (the blob's own colour, ~8–12%) under the top-lit white wash,
+     a white top rim and a bottom rim warmed toward clay, like light passing through tinted glass. No white outline. */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.10)),
+    linear-gradient(180deg, rgba(201, 105, 90, 0.08), rgba(201, 105, 90, 0.12));
+  border: 0;
+  -webkit-backdrop-filter: blur(16px) saturate(1.7) brightness(1.04); backdrop-filter: blur(16px) saturate(1.7) brightness(1.04);
+  box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.15);
+  font-family: var(--f-wide); font-weight: 600; font-stretch: 112%; font-size: 13px; line-height: 1; letter-spacing: -0.02em; color: var(--ink);
+  opacity: 0; transform: translateY(-4px) scale(.96); transform-origin: top right;
+  transition: opacity .16s ease, transform .3s cubic-bezier(.34, 1.4, .64, 1);
+}
+/* The rim light: a white highlight and a pink one on opposite sides of a 1px ring, running around the pill
+   (one lap every 4s) while the tooltip is showing. Reduced motion keeps them still: white on top, pink below. */
+@property --tip-a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.tip::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: conic-gradient(from var(--tip-a),
+    rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0) 70deg,
+    rgba(217, 150, 140, 0) 110deg, rgba(217, 150, 140, 0.6) 180deg, rgba(217, 150, 140, 0) 250deg,
+    rgba(255, 255, 255, 0) 290deg, rgba(255, 255, 255, 0.95) 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: tip-run 4s linear infinite; animation-play-state: paused;
+}
+.blob:hover .tip::before, .blob:focus-visible .tip::before { animation-play-state: running; }
+@keyframes tip-run { to { --tip-a: 360deg; } }
+@media (prefers-reduced-motion: reduce) { .tip::before { animation: none; } }
+.tip kbd {
+  font-family: var(--f-semi); font-weight: 600; font-size: 11px; line-height: 1; letter-spacing: .04em; color: var(--clay);
+  background: rgba(201, 105, 90, 0.16); border: 0.5px solid rgba(201, 105, 90, 0.34); border-radius: 999px; padding: 4px 8px;
+}
+.blob:hover .tip, .blob:focus-visible .tip { opacity: 1; transform: none; transition-delay: .08s; }
+@media (prefers-reduced-motion: reduce) { .tip { transform: none; transition: opacity .16s ease; } }
+/* Live blob: a canvas the size of the logo plus 16px each side for its glow, centred on the img so both
+   scale about the same point. Once it mounts it replaces the img; on hover the middle warms to yellow and rolls like sound. */
+.blob canvas { position: absolute; left: -13.9px; top: -14.5px; width: 71.6px; height: 70.7px; pointer-events: none; opacity: 0;
+  transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
+.blob.live canvas { opacity: 1; }
+.blob.live img { visibility: hidden; }
+.blob:hover canvas, .blob:focus-visible canvas { transform: scale(1.08); }
+
+/* ---------- Layout grid: the home page's grid ----------
+   16 / 20 / 24 columns on large screens, 8 and 4 below, same gutters, margins and breakpoints as the home page
+   (press G to see it). Everything snaps to its column lines:
+     hero image   the same columns as the first case study on the home page, so it is the same image at the same size
+     text         centred inside it: 16 col 5–12 (4–13 below 1440) · 20 col 7–14 · 24 col 9–16 · full width below 1080
+     back, contents  on column 1 · blob ends on the last column */
+:root { --cols: 16; --gutter: 32px; --margin: 80px; --hero-col: 3 / span 12; --text-col: 5 / span 8; }
+@media (min-width: 2000px) { :root { --cols: 20; --hero-col: 4 / span 14; --text-col: 7 / span 8; } }
+@media (min-width: 2880px) { :root { --cols: 24; --hero-col: 7 / span 12; --text-col: 9 / span 8; } }
+/* As on rachelchen.tech: the hero keeps clear of the menu while the menu shows, and goes full width only once
+   the menu is gone (below 1200px). */
+@media (max-width: 1199px) { :root { --hero-col: 1 / -1; } }
+@media (max-width: 1439px) { :root { --gutter: 24px; --margin: 48px; --text-col: 4 / span 10; } }
+@media (max-width: 1079px) { :root { --cols: 8; --gutter: 24px; --margin: 32px; --text-col: 1 / -1; } }
+@media (max-width: 639px) { :root { --cols: 4; --gutter: 16px; --margin: 16px; } }
+.hero, .body {
+  max-width: 3840px; margin-inline: auto;
+  padding-left: max(var(--margin), env(safe-area-inset-left, 0px)); padding-right: max(var(--margin), env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); column-gap: var(--gutter);
+}
+.hero > * { grid-column: var(--hero-col); min-width: 0; }
+.body > * { grid-column: var(--text-col); min-width: 0; }
+/* Reading column width, matched to the reference case study at the same window width (W), centred:
+     W ≥ 1200   W / 2 − 32
+     768–1199   0.75 × (W − 32) − 4
+     < 768      W − 32  (16px each side)
+   Written against the body's inner width (100% = W − 2 × margin), so it is exact with or without a scrollbar. */
+.body { --measure: calc(50% + var(--margin) - 32px); }
+@media (max-width: 1199px) { .body { --measure: calc(75% + 1.5 * var(--margin) - 28px); } }
+@media (max-width: 767px) { .body { --measure: calc(100% + 2 * var(--margin) - 32px); } }.body > :not(.toc) { grid-column: 1 / -1; width: var(--measure); margin-left: calc((100% - var(--measure)) / 2); }
+
+/* ---------- Hero: title centred, then the first case study image from the home page ---------- */
+.hero h1 {
+  margin: 9.5px auto 45px; max-width: 566px; /* first baseline on the 128px row line */ text-align: center; justify-self: center;
+  font-family: var(--f-wide); font-weight: 600; font-stretch: 112%; font-size: clamp(26px, 5.6vw, 36px); line-height: 1.55; letter-spacing: -0.03em;
+}
+.hero h1 b { font-family: var(--f-ext); font-weight: 700; font-stretch: 125%; display: block; }
+/* Glass frame and slide, as on the home page: a frosted rim tinted by the slide's gradient. */
+.gframe {
+  position: relative; isolation: isolate; padding: 8px; border-radius: 26px; overflow: hidden;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(74, 62, 62, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.9);   /* no drop shadow on the case study page */
+}
+.gframe::before { content: ""; position: absolute; inset: -24px; z-index: -1; background: var(--bg); filter: blur(22px) saturate(1.15); opacity: .38; transition: opacity .6s ease; }
+.gframe:hover::before { opacity: .55; }
+.slide { position: relative; aspect-ratio: 846 / 540; overflow: hidden; container-type: inline-size; border-radius: 18px; display: block; }
+.slide::after {
+  content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit; padding: 1px;
+  background: linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.18) 22%, rgba(255,255,255,.06) 60%, rgba(255,255,255,.22));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.slide canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 1.1s ease; }
+.slide.live canvas { opacity: 1; transition-duration: .5s; }
+.slide > .layer { position: absolute; inset: 0; animation: rise 1s cubic-bezier(.22, 1, .36, 1) both; }
+/* children sit in Figma's 846 x 540 coordinates */
+.at { position: absolute; left: calc(var(--x) / 846 * 100%); top: calc(var(--y) / 540 * 100%); width: calc(var(--w) / 846 * 100%); height: calc(var(--h) / 540 * 100%); }
+.glass { background: rgba(217, 217, 217, 0.2); border: 0.5px solid #ebddda; border-radius: 20px 20px 0 0; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.shot { border-radius: 16px 16px 0 0; overflow: hidden; }
+.shot video { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.shot.cropped { background: #cbcbcb; }
+.shot.cropped video { height: auto; }
+.slide .lift { position: absolute; inset: 0; transition: transform .7s cubic-bezier(.22, 1, .36, 1); }
+.slide:hover .lift.l1 { transform: translateY(-1.5%); }
+.slide:hover .lift.l2 { transform: translateY(-3%); }
+@keyframes rise { from { transform: translateY(6%); opacity: 0; } }
+@media (max-width: 639px) { .gframe { padding: 4px; border-radius: 18px; } .slide { border-radius: 14px; } }
+
+/* ---------- Reading column ---------- */
+.body { position: relative; padding-top: 16px; padding-bottom: 200px; }   /* + the hero's 16px below the image = 32px to the Timeline row */
+.meta { display: grid; grid-template-columns: 1fr auto 1fr; column-gap: 24px; margin-bottom: 80px; }
+.meta > div:nth-child(2) { grid-column: 2; }   /* Scope sits in the centre of the text column; Timeline stays on the left edge */
+.meta dt { font-family: var(--f-wide); font-weight: 600; font-stretch: 112%; font-size: 16px; line-height: 25px; letter-spacing: -0.48px; color: var(--dim); margin-bottom: 8px; }
+.meta dd { margin: 0; font-family: var(--f-narrow); font-weight: 600; font-size: 16px; line-height: 25px; letter-spacing: -0.48px; }
+
+section, .body [id] { scroll-margin-top: 48px; }
+.label { margin: 0 0 11px; font-family: var(--f-wide); font-weight: 600; font-stretch: 112%; font-size: 16px; line-height: 25px; letter-spacing: -0.48px; color: var(--dim); }
+h2 { margin: 0 0 12px; font-family: var(--f-reg); font-weight: 400; font-size: clamp(22px, 4.6vw, 28px); line-height: 1.57; letter-spacing: -0.03em; }
+h2 i, .lead i { font-style: italic; }
+h2.mid { margin-top: 80px; }
+h3 { margin: 80px 0 16px; font-family: var(--f-reg); font-weight: 400; font-size: 20px; line-height: 31px; letter-spacing: -0.6px; }
+h3.strong { font-family: var(--f-narrow); font-weight: 600; font-size: 20px; line-height: 31px; letter-spacing: -0.6px; margin-top: 24px; margin-bottom: 9px; }
+p, li { font-family: var(--f-reg); font-size: 14px; line-height: 24px; letter-spacing: -0.42px; color: var(--dim); }
+p { margin: 0 0 16px; }
+p em { font-style: normal; color: var(--ink); }
+p + h2 { margin-top: 0; }
+ul { margin: 0 0 16px; padding-left: 24px; }
+.gap-s { margin-top: 12px; }
+.rule { height: 1px; border: 0; background: var(--rule); margin: 79px 0 62px; }
+
+/* Placeholders: the grey frames from the Figma file, waiting for their visuals. Notes sit where the designer left them. */
+.ph { position: relative; background: var(--ph); margin: 0 0 12px; }
+.ph .cap { position: absolute; left: 17px; top: 14px; font-family: var(--f-narrow); font-weight: 400; font-size: 16px; line-height: 25px; letter-spacing: -0.48px; color: var(--ink); }
+.ph .note { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); margin: 0; font-size: 16px; color: var(--ink); }
+.ph .note.small { left: 20%; top: 100px; transform: none; max-width: 344px; font-family: system-ui, sans-serif; font-size: 12px; line-height: 1.25; letter-spacing: -0.36px; color: #000; }
+.ph .note.small span { display: block; }
+.ph .big { position: absolute; left: 39%; top: 36%; font-family: var(--f-wide); font-weight: 600; font-stretch: 112%; font-size: clamp(36px, 7.5vw, 64px); line-height: 1.55; letter-spacing: -0.03em; color: #000; }
+.h345 { height: 345px; } .h537 { height: 537px; } .h352 { height: 352px; } .h340 { height: 340px; }
+/* Filled placeholders: the clip keeps the frame's 846 x 537 shape at any width. */
+.clip { margin: 0 0 12px; aspect-ratio: 846 / 537; overflow: hidden; border-radius: 18px; background: #1a1414; }   /* same 18px corners as the hero slide */
+.clip video { width: 100%; height: 100%; object-fit: cover; }
+/* The stitched multimodal video is itself a Figma frame (846 x 554, purple card with grain), so the clip takes that shape and colour. */
+.clip.mm { position: relative; aspect-ratio: 846 / 554; background: #cfcbfb; border: 1px solid #bab7d6; }
+/* Sound toggle on the multimodal video: a small pane of the same frosted glass as the blob's tooltip,
+   bottom right. The film line and the lyric are the point of the clip, so it is the one video you can hear. */
+.sound {
+  position: absolute; right: 14px; bottom: 14px; z-index: 2; display: grid; place-items: center;
+  width: 34px; height: 34px; padding: 0; border: 0; border-radius: 999px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .62), rgba(255, 255, 255, .34));
+  -webkit-backdrop-filter: blur(16px) saturate(1.6); backdrop-filter: blur(16px) saturate(1.6);
+  box-shadow: 0 0 .5px rgba(0, 0, 0, .3), 0 1px 3px rgba(0, 0, 0, .15), inset 0 1px 0 rgba(255, 255, 255, .8);
+  font-family: var(--f-wide); font-weight: 600; font-stretch: 112%; font-size: 12px; line-height: 1; letter-spacing: -0.02em; color: var(--ink);
+  opacity: 0; transform: translateY(4px) scale(.94);
+  transition: opacity .25s ease, transform .35s cubic-bezier(.34, 1.4, .64, 1), background .25s ease;
+}
+/* Shown only while the pointer is over the video (or the button has keyboard focus). Touch screens have no hover,
+   so there it stays visible. */
+.clip.mm:hover .sound, .sound:focus-visible { opacity: 1; transform: none; }
+@media (hover: none) { .sound { opacity: 1; transform: none; } }
+.clip.mm .sound:hover { transform: scale(1.04); background: linear-gradient(180deg, rgba(255, 255, 255, .78), rgba(255, 255, 255, .5)); }
+.clip.mm .sound:active { transform: scale(.94); }
+.sound:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
+.sound svg { width: 15px; height: 15px; flex: none; }
+.sound .waves { transition: opacity .25s ease; }
+.sound .cross { opacity: 0; transition: opacity .25s ease; }
+.sound[aria-pressed="false"] .waves { opacity: 0; }
+.sound[aria-pressed="false"] .cross { opacity: 1; }
+@media (max-width: 639px) { .sound { right: 8px; bottom: 8px; width: 30px; height: 30px; } }
+@media (prefers-reduced-motion: reduce) { .sound { transition: opacity .2s ease; transform: none !important; } }
+/* Thoughts-into-words line animation: warm grey card from the "film" frame, one marker stroke */
+.clip.tw { position: relative; aspect-ratio: 846 / 440;   /* shorter frame; the drawing keeps its scale and the empty top and bottom are cropped */ background: #f3f1ef; border: 1px solid #eae8e6; }
+.clip.tw svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.clip.tw .thread-path { fill: none; stroke: #191817; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+/* Background options for the demo recording (Figma frames, 846 x 554): a flat colour with a hairline border,
+   the label top left, and the recording centred inside an iPhone frame. Sizes are in cqw (1/100 of the frame
+   width) so the phone scales with the frame. */
+.bgopt { border-radius: 18px; background: var(--opt); aspect-ratio: 846 / 554; overflow: hidden; container-type: inline-size;
+  border: 1px solid var(--line, rgba(74, 62, 62, .14)); }
+/* Figma's texture and noise on each frame: a 256px tile of single-pixel grain, light and dark specks
+   (measured against the Figma render: same brightness, about ±2.5 levels of noise). Under the phone and label. */
+.bgopt::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: url("img/grain.png") 0 0 / 256px 256px repeat; }
+/* The iPhone: a near-black bezel around the screen, a titanium edge (two rings), and soft drop shadows. */
+.bgopt .phone {
+  position: absolute; left: 50%; top: 5.2cqw; width: 24.5cqw; height: calc(24.5cqw * 1392 / 640); transform: translateX(-50%);
+  box-sizing: content-box; padding: 1.15cqw; border-radius: 4.9cqw; background: #141416;
+  box-shadow:
+    inset 0 0 0 0.22cqw #3a3a3e, inset 0 0 0 0.32cqw #8e8e93, inset 0 0 0 0.42cqw #1e1e21,
+    0 0.3cqw 0.8cqw rgba(0, 0, 0, .14), 0 2.4cqw 4.8cqw -1.6cqw rgba(0, 0, 0, .32);
+}
+/* Side buttons: action and volume on the left, side button on the right. */
+.bgopt .phone::before, .bgopt .phone::after { content: ""; position: absolute; width: 0.42cqw; border-radius: 0.2cqw; background: #4a4a4e; }
+.bgopt .phone::before { left: -0.32cqw; top: 15%; height: 3.4cqw;
+  box-shadow: 0 5.4cqw 0 #4a4a4e, 0 5.4cqw 0 0 #4a4a4e; }
+.bgopt .phone::after { right: -0.32cqw; top: 26%; height: 7.8cqw; }
+.bgopt .phone video { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 3.75cqw; background: #f2f2f2; }
+@media (max-width: 639px) { .bgopt .cap { left: 12px; top: 8px; font-size: 13px; } }
+.h439 { height: 439px; } .h486 { height: 486px; } .h242 { height: 242px; } .h211 { height: 211px; }
+/* Paragraph text sits 12px above the image that follows it, matching the 12px under every image
+   (paragraphs otherwise keep 16px between each other). */
+.body p:has(+ .ph, + .clip, + .stack),
+.body ul:has(+ .ph, + .clip, + .stack),
+.body .rv:has(+ .ph, + .clip, + .stack) > p:last-child,
+.body .rv:has(+ .ph, + .clip, + .stack) > ul:last-child { margin-bottom: 12px; }
+
+/* ---------- Card stack (Figma 194:256) ----------
+   The 763 x 452 frame scales to the column through --u (one Figma px). On phones --u stops at 0.8px so the card
+   type stays readable; the frame then keeps its middle and crops the sides. */
+.stack { container-type: inline-size; margin: 0 0 12px; }
+.stage { --u: max(calc(100cqw / 763), 0.8px); position: relative; height: calc(452 * var(--u)); overflow: hidden; border-radius: 18px; background: #fff; }   /* 18px corners, like the clip and hero */
+.canvas { position: absolute; top: 0; left: 50%; width: calc(763 * var(--u)); height: 100%; transform: translateX(-50%); }
+.card {
+  position: absolute; width: calc(242 * var(--u)); height: calc(294 * var(--u));
+  left: calc((var(--bx) + var(--bw) / 2 - 121) * var(--u)); top: calc((var(--by) + var(--bh) / 2 - 147) * var(--u));
+  display: flex; flex-direction: column; justify-content: center; gap: calc(8 * var(--u));
+  padding: 0 calc(24 * var(--u)) 0 calc(16 * var(--u)); border-radius: calc(12 * var(--u));
+  background: var(--bg); color: var(--fg); overflow-wrap: break-word;
+  /* Figma light/elevation-200-canvas */
+  box-shadow: 0 0 0.5px rgba(0, 0, 0, .18), 0 3px 8px rgba(0, 0, 0, .1), 0 1px 3px rgba(0, 0, 0, .1);
+  transform: rotate(var(--r));
+  transition: transform .5s cubic-bezier(.22, 1.2, .36, 1), box-shadow .35s ease;
+}
+.card b { font-family: var(--f-wide); font-weight: 600; font-stretch: 112%; font-size: calc(12 * var(--u)); line-height: 1.55; }
+.card p { margin: 0; font-family: "Ob Med", var(--f-reg); font-weight: 500; font-size: calc(16 * var(--u)); line-height: 1.55; letter-spacing: 0; color: inherit; }
+.card small { display: block; font-family: var(--f-narrow); font-weight: 600; font-size: calc(12 * var(--u)); line-height: 1.55; }
+/* The cards are in place from the start; hovering one lifts it off the pile and squares it up a little. */
+.stack .card:hover { z-index: 20; transform: rotate(calc(var(--r) * .6)) translateY(calc(-10 * var(--u))) scale(1.04);
+  box-shadow: 0 0 0.5px rgba(0, 0, 0, .18), 0 10px 24px rgba(0, 0, 0, .16), 0 2px 6px rgba(0, 0, 0, .1); }
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+
+/* Context / Interpretation / Connection (Figma 224:95, 224:99, 224:106): three 276 x 240 photo cards on the 846 line,
+   64px under the question. Hover or focus fades in the second Figma row (224:108, 232:71, 232:89): a tinted gradient
+   over the photo with the title and description in white. The text is always in the page for screen readers;
+   on touch screens a tap shows it. */
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 52px; }
+.tcard {
+  position: relative; aspect-ratio: 276 / 240; border-radius: 24px; overflow: hidden; isolation: isolate;
+  outline: none; -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 1px 2px rgba(74, 62, 62, .05), 0 14px 32px -18px rgba(74, 62, 62, .3);
+  transition: transform .5s cubic-bezier(.22, 1, .36, 1), box-shadow .5s ease;
+}
+/* Layers, bottom to top: the photo (placed and cropped as in Figma), the soft clay/lavender vignette, the hover
+   gradient, the hairline rim, then one block of text. At rest only the title shows, sitting at the bottom; on hover
+   the description unfolds beneath it, so the same title glides up as the gradient washes in. */
+.tcard { --ease: cubic-bezier(.22, 1, .36, 1); --dur: .6s; }
+.tcard .ph-img { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; transition: transform .9s var(--ease); }
+.tcard .ph-img img { position: absolute; max-width: none; left: var(--l); top: var(--t); width: var(--w); height: var(--h); }
+.tcard .vig { position: absolute; inset: 0; z-index: 1; border-radius: inherit; pointer-events: none;
+  box-shadow: inset 1px 0 50px #d77261, inset -1px 0 60px #cfcbfb, inset 0 -20px 50px #cfcbfb, inset 0 -57px 50px #d77261; }
+.tcard.alt .vig { box-shadow: inset 0 -57px 50px #d77261, inset 1px 0 50px #d77261, inset 0 -1px 50px #cfcbfb, inset -1px 0 60px #cfcbfb; }
+.tcard .wash {
+  position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(180deg, rgba(215, 114, 97, .8), #b9b3f9);
+  box-shadow: inset 1px 0 50px #d77261, inset 0 4px 50px #cfcbfb;
+  opacity: 0; transition: opacity var(--dur) ease;
+}
+.tcard.alt .wash { background: linear-gradient(180deg, rgba(185, 179, 249, .7), #d77261); box-shadow: none; }
+.tcard::before {   /* hairline rim, as in Figma (#eae8e6) */
+  content: ""; position: absolute; inset: 0; z-index: 4; border-radius: inherit; border: 1px solid #eae8e6; pointer-events: none;
+}
+.tcard .txt {
+  position: absolute; left: calc(27 / 276 * 100%); right: calc(27 / 276 * 100%); bottom: 0; z-index: 3;
+  padding-bottom: 0; text-align: center; color: #fff; transition: padding-bottom var(--dur) var(--ease);
+}
+.tcard h4 { margin: 0; padding: 8px 0; font-family: var(--f-narrow); font-weight: 600; font-size: 20px; line-height: normal; letter-spacing: -0.6px; color: #fff; }
+/* The description folds to zero height at rest (grid 0fr → 1fr animates its real height, so the title moves by exactly that much). */
+.tcard .more { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur) var(--ease); }
+.tcard .more > div { overflow: hidden; min-height: 0; }
+.tcard p { margin: 0; font-family: var(--f-reg); font-size: 14px; line-height: 1.3; letter-spacing: -0.42px; color: #fff;
+  opacity: 0; transform: translateY(6px); transition: opacity .35s ease, transform var(--dur) var(--ease); }
+.tcard:is(:hover, :focus-visible, .open) .wash { opacity: 1; }
+.tcard:is(:hover, :focus-visible, .open) .txt { padding-bottom: 24px; }
+.tcard:is(:hover, :focus-visible, .open) .more { grid-template-rows: 1fr; }
+.tcard:is(:hover, :focus-visible, .open) p { opacity: 1; transform: none; transition-delay: .12s, 0s; }
+.tcard:is(:hover, :focus-visible, .open) .ph-img { transform: scale(1.04); }
+.tcard:hover, .tcard:focus-visible { transform: translateY(-4px); box-shadow: 0 1px 2px rgba(74, 62, 62, .05), 0 22px 40px -18px rgba(74, 62, 62, .38); }
+.tcard:focus-visible { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--clay); }
+@media (prefers-reduced-motion: reduce) { .tcard, .tcard * { transition-duration: .01s !important; transition-delay: 0s !important; } .tcard, .tcard .ph-img { transform: none !important; } }
+/* Narrow screens: the cards stack, each at the Figma card's own shape, centred. */
+@media (max-width: 639px) {
+  .trio { grid-template-columns: minmax(0, 340px); justify-content: center; gap: 12px; margin-top: 28px; }
+}
+/* Two halves: Situational context / Consumed material */
+/* Assets side by side are always 12px apart (one number across the case study, on the 4px scale).
+   Text-only columns (Reflections) keep a wider 36px. */
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+.pair.text { gap: 36px; }
+.pair .ph .cap { left: 36px; top: 78px; }
+.pair p { margin-top: 6px; }
+/* Both halves are square, so the messages card (a 405 x 405 Figma frame) fits its slot exactly. */
+.pair .ph { height: auto; aspect-ratio: 1 / 1; }
+/* Situational context: the floor plan fills its square slot (cropping only the empty paper above and below),
+   with the Figma title (172:239) set right under it and the caption straight after. */
+.ph.photo { background: none; overflow: hidden; border-radius: 18px; }
+.ph.photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Slight film grain over the floor plan: fine fractal noise, multiplied so it only darkens, kept faint. */
+.ph.photo::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px auto; opacity: .22; mix-blend-mode: multiply;
+}
+.pair .ptitle { margin: 14px 0 0; font-family: var(--f-narrow); font-weight: 400; font-size: 16px; line-height: 25px; letter-spacing: -0.48px; color: var(--ink); }
+.pair .ptitle + p { margin-top: 0; }
+
+/* ---------- Messages flow (Figma 246:103) in the Consumed material slot ----------
+   The card is laid out at its Figma size (405 x 405) and scaled to the slot's width by script (--mf-s),
+   so every position matches Figma at any column width. Driven by messages-flow.js. */
+.ph.mf-slot { background: none; overflow: hidden; border-radius: 18px; }
+.mf-card {
+  position: absolute; left: 0; top: 0; width: 405px; height: 405px; overflow: hidden;
+  transform: scale(var(--mf-s, 1)); transform-origin: 0 0;
+  background: #5a4f9a url("img/messages-gradient.jpg") center / cover no-repeat;
+}
+.mf-card .msg {
+  position: absolute; top: 0; box-sizing: border-box; padding: 16px 10px; border: 1px solid #fff; border-radius: 24px;
+  font-family: var(--f-reg); font-size: 12px; line-height: 1.25; letter-spacing: 0;
+  opacity: 0; transform-origin: center; will-change: transform, opacity;
+}
+/* Reset the page's paragraph style inside the bubbles; the margins trim the text box to cap height and
+   baseline, as Figma does (fixed values, because CSS text-box trim jumps in Chrome when the words finish). */
+.mf-card .msg p { margin: -5px 0 -1px; font: inherit; line-height: inherit; letter-spacing: inherit; color: inherit; }
+.mf-card .q { right: 86px; white-space: nowrap; color: #fff; }
+.mf-card .q.wrap { white-space: normal; width: 188px; }
+.mf-card .a { left: 86px; width: 201px; background: #fff; color: #3f3e4a; }
+/* Static caption, bottom left (Figma 253:190). */
+.mf-card .caption {
+  position: absolute; left: 12px; bottom: 12px; margin: 0; pointer-events: none; white-space: nowrap;
+  font-family: var(--f-reg); font-size: 8px; line-height: normal; letter-spacing: 0; color: #bdbbd3;
+  text-box: trim-both cap alphabetic;
+}
+
+/* ---------- All-encompassing cards (Figma 172:250 + 234:186): two 411 x 486 slots ----------
+   Left: the seven Information Anatomy frames as a stacked deck. The front card sits at the bottom of the slot,
+   the next two peek out above it, a little smaller. Every few seconds (or on a click, swipe, arrow key or dot)
+   the front card is tossed aside and slides to the back of the pile. Right: the prototype slot. */
+.anat-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; margin: 0 0 12px; }
+.anat-proto { aspect-ratio: 411 / 486; margin: 0; border-radius: 18px; }
+.anat-proto .cap { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+/* The prototype slot, filled: the same lavender frame, grain, label and iPhone as the demos under "Solution",
+   in the deck's 411 x 486 shape. --u is one cqw of those full-width frames (two slots plus the 12px gap between them),
+   so the phone is exactly the same size as theirs; it is centred in the taller slot. */
+.bgopt.anat-proto { --u: calc(2cqw + 0.12px); }
+.bgopt.anat-proto .phone {
+  top: 50%; transform: translate(-50%, -50%);
+  width: calc(24.5 * var(--u)); height: calc(24.5 * var(--u) * 1392 / 640);
+  padding: calc(1.15 * var(--u)); border-radius: calc(4.9 * var(--u));
+  box-shadow:
+    inset 0 0 0 calc(.22 * var(--u)) #3a3a3e, inset 0 0 0 calc(.32 * var(--u)) #8e8e93, inset 0 0 0 calc(.42 * var(--u)) #1e1e21,
+    0 calc(.3 * var(--u)) calc(.8 * var(--u)) rgba(0, 0, 0, .14), 0 calc(2.4 * var(--u)) calc(4.8 * var(--u)) calc(-1.6 * var(--u)) rgba(0, 0, 0, .32);
+}
+.bgopt.anat-proto .phone::before, .bgopt.anat-proto .phone::after { width: calc(.42 * var(--u)); border-radius: calc(.2 * var(--u)); }
+.bgopt.anat-proto .phone::before { left: calc(-.32 * var(--u)); height: calc(3.4 * var(--u));
+  box-shadow: 0 calc(5.4 * var(--u)) 0 #4a4a4e, 0 calc(5.4 * var(--u)) 0 0 #4a4a4e; }
+.bgopt.anat-proto .phone::after { right: calc(-.32 * var(--u)); height: calc(7.8 * var(--u)); }
+.bgopt.anat-proto .phone video { border-radius: calc(3.75 * var(--u)); }
+/* Both slots are as tall as the full-width demo frames above (846 x 554 at the column's width), not 411 x 486.
+   The anatomy art keeps its 411 x 486 proportions and sits centred in the taller deck (--dy above and below);
+   its clip and the two labels move down with it. Phones stack the slots, so they keep the Figma shape there. */
+.anat-pair { container-type: inline-size; }
+.anat-pair .anat-deck, .anat-pair .anat-proto { aspect-ratio: auto; height: calc(100cqw * 554 / 846); }
+.anat-pair .anat-deck { container-type: size; --art: calc(100cqw * 486 / 411); --dy: calc((100cqh - var(--art)) / 2); }
+.anat-pair .anat-card { clip-path: inset(calc(var(--dy) + 2px) 2px calc(100cqh - var(--dy) - 100cqw * 405 / 411) 2px); }
+.anat-pair .anat-card img { position: absolute; left: 0; top: var(--dy); height: var(--art); }
+.anat-pair .anat-ia { top: calc(var(--dy) + 100cqw * 445 / 411); }
+.anat-pair .anat-type { top: calc(var(--dy) + 100cqw * 416 / 411); }
+@media (max-width: 639px) {
+  .anat-pair .anat-deck, .anat-pair .anat-proto { height: auto; aspect-ratio: 411 / 486; }
+}
+/* Two prototypes side by side (the AI response shapes): the same slots as above, with the label back in the top left. */
+.anat-pair .bgopt .cap { left: 17px; top: 14px; transform: none; }
+/* The phone sits 12px below the middle so the label above it stays clear. Phones show them full width,
+   exactly like the single demos. */
+.ai-pair .bgopt.anat-proto .phone { top: calc(50% + 12px); }
+@media (max-width: 639px) {
+  .anat-pair .bgopt .cap { left: 12px; top: 8px; }
+  .ai-pair .bgopt.anat-proto { aspect-ratio: 846 / 554; height: auto; --u: 1cqw; }
+  .ai-pair .bgopt.anat-proto .phone { top: calc(5.2 * var(--u)); transform: translateX(-50%); }
+}
+/* Description vs conversation (Figma 316:214, 846 x 293): two equal beige tiles with the 12px asset gap
+   that shows the page through, in place of a divider. Left, the description; right, the chat in the app's bubbles, running upward
+   as plain text. Sized in cqw of the whole 846 frame, so it scales like an image. Phones stack the two tiles. */
+/* A lighter ground (#F8F7F5) sits under both tiles and shows through the gap, as in the x.ai reference. */
+.clip.dc { position: relative; aspect-ratio: 846 / 293; background: #f8f7f5; border: 0; border-radius: 18px; overflow: hidden;
+  container-type: inline-size; display: grid; grid-template-columns: 1fr 1fr; column-gap: 12px;
+  font-family: var(--f-reg); color: #1d1b1b; }
+.dc-tile { position: relative; min-width: 0; overflow: hidden; border-radius: 18px; background: #f3f1ef; }
+.dc-r { display: grid; place-items: center; }
+/* The chat runs up without stopping and fades out at the top and bottom edges, like a feed that keeps going. */
+.dc-chat { position: absolute; left: 13%; right: 13%; top: 0; bottom: 0; overflow: hidden;
+  -webkit-mask: linear-gradient(180deg, transparent 0%, #000 28%, #000 72%, transparent 100%);
+  mask: linear-gradient(180deg, transparent 0%, #000 28%, #000 72%, transparent 100%); }
+.dc-run { animation: dc-run 22s linear infinite; will-change: transform; }
+.dc-set { display: flex; flex-direction: column; gap: 1.5cqw; padding-bottom: 1.5cqw; }
+@keyframes dc-run { to { transform: translateY(-50%); } }
+@media (prefers-reduced-motion: reduce) { .dc-run { animation: none; } }
+.dc-chat p { margin: 0; max-width: 80%; padding: 1cqw 1.42cqw; border-radius: 1.6cqw; font-family: inherit; font-weight: 400; font-size: 1.5cqw; line-height: 1.4;
+  letter-spacing: -0.03em; color: #1d1b1b; }
+.dc-chat .ai { align-self: flex-start; background: #fff; box-shadow: 0 0 0 0.06cqw rgba(0, 0, 0, .06); }
+.dc-chat .you { align-self: flex-end; background: #e9e6e6; }
+.dc-desc { width: 60.7%; margin: 0;
+  font-family: inherit; font-size: 1.62cqw; line-height: 1.5; letter-spacing: -0.03em; color: #1d1b1b; }
+@media (max-width: 639px) {
+  .clip.dc { aspect-ratio: auto; grid-template-columns: 1fr; row-gap: 8px; border-radius: 14px; }
+  .dc-tile { border-radius: 14px; }
+  .dc-l { height: 220px; }
+  .dc-chat { left: 20px; right: 20px; }
+  .dc-r { padding: 24px 20px; }
+  .dc-desc { width: auto; font-size: 14px; }
+  .dc-set { gap: 8px; padding-bottom: 8px; }
+  .dc-chat p { font-size: 13px; padding: 7px 11px; border-radius: 13px; }
+}
+/* Three response-shape tiles in a row (Figma 284 x 289 each). Named "shapes" so it never touches the
+   Context / Interpretation / Connection cards, which own the "trio" class. */
+.shapes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0 0 12px; }
+/* The three response shapes: the beige card with its hairline and 18px corners, glyphs in ink, sized in cqw of each tile. */
+.shape { aspect-ratio: 284 / 289; display: grid; place-items: center; border-radius: 18px; background: #f3f1ef; border: 1px solid #eae8e6;
+  container-type: inline-size; color: var(--ink); }
+.shape .q { font-family: var(--f-ext); font-weight: 700; font-stretch: 125%; font-size: 45cqw; line-height: 1;
+  text-box: trim-both cap alphabetic;   /* trims the line box to the glyph's height */
+  transform: translate(0.1em, -0.04em); }   /* measured: the "?" ink sits 0.1em left of its box; this centres the ink itself */
+@supports not (text-box: trim-both cap alphabetic) { .shape .q { transform: translate(0.1em, -15%); } }
+.shape svg { display: block; width: 52.8%; height: auto; overflow: visible; }
+.shape svg[viewBox="0 0 139 90"] { width: 49%; }
+@media (max-width: 639px) { .shapes { gap: 8px; } .shape { border-radius: 14px; } }
+.anat { position: relative; outline: none; -webkit-tap-highlight-color: transparent; }
+/* One card at a time: the deck clips, so the next card waits just off its right edge and the old one leaves past its left. */
+/* What all seven share stays put: the frame (Figma #f3f1ef with a #eae8e6 hairline) and the "Information Anatomy"
+   label. Each card image is clipped just inside the hairline and just above the label (Figma y 442 of 486),
+   so only what differs, the anatomy and its type name, slides. */
+.anat-deck { position: relative; aspect-ratio: 411 / 486; overflow: hidden; border-radius: 18px; container-type: inline-size;
+  background: #f2f1ef; box-shadow: inset 0 0 0 1px #eae8e6;
+  touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.anat-card {
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  position: absolute; inset: 0; margin: 0;
+  clip-path: inset(2px 2px calc(81 / 486 * 100%) 2px);   /* stops at Figma y 405, above the type name */
+  transition: transform .6s var(--ease);
+  cursor: pointer;
+}
+.anat-ia { position: absolute; left: 0; right: 0; top: calc(445 / 486 * 100%); z-index: 20; margin: 0; pointer-events: none; text-align: center;
+  font-family: var(--f-narrow); font-weight: 500; font-size: calc(16 / 411 * 100cqw); line-height: normal; letter-spacing: -0.03em; color: #99948f; }
+/* The type name (Figma y 416, #3f3e4a): pinned in place, swapped letter by letter by the script. */
+/* Not clipped: descenders (the g and p in "instagram post") and the letters' rise and fall stay fully visible. */
+.anat-type { top: calc(416 / 486 * 100%); color: #3f3e4a; height: 1.5em; }
+.anat-type .w { position: absolute; left: 0; right: 0; top: 0; display: flex; justify-content: center; white-space: nowrap; line-height: 1.5; }
+.anat-type .w span { display: inline-block; animation: anat-in .5s cubic-bezier(.22, 1, .36, 1) both; }
+.anat-type .w.leave span { animation: anat-out .3s cubic-bezier(.4, 0, 1, 1) both; }
+@keyframes anat-in { from { opacity: 0; transform: translateY(40%); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes anat-out { from { opacity: 1; transform: none; filter: none; } to { opacity: 0; transform: translateY(-40%); filter: blur(3px); } }
+@media (prefers-reduced-motion: reduce) { .anat-type .w span, .anat-type .w.leave span { animation: none; } .anat-type .w.leave { display: none; } }
+.anat-card img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+/* 0 is the card showing; the rest wait off to the right. */
+.anat-card[data-pos="0"] { z-index: 10; transform: none; }
+.anat-card:not([data-pos="0"]) { z-index: 1; transform: translateX(100%); }
+/* Leaving: slides out past the left edge (or the right, when going back). */
+.anat-card.out { z-index: 11; transform: translateX(calc(var(--dir, -1) * 100%)); }
+.anat-card.dragging { transition: none; }
+.anat-card.snap { transition: none !important; }
+.anat:focus-visible .anat-deck { outline: 2px solid var(--clay); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .anat-card { transition-duration: .01s !important; } }
+@media (max-width: 639px) { .anat-pair { grid-template-columns: 1fr; gap: 24px; } }
+
+/* ---------- Contents: sticky at x 124, from y 1081 ---------- */
+/* Absolutely placed in grid columns 1–3, so it starts on the column 1 line. */
+.body > .toc { position: absolute; grid-column: 1 / span 3; left: 0; top: 0; height: 100%; }
+.toc ol { position: fixed; z-index: 50; left: max(var(--margin), env(safe-area-inset-left, 0px)); top: var(--toc-top, 200px); list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }   /* never moves; only the case study scrolls */
+.toc a {
+  font-family: var(--f-narrow); font-weight: 500; font-size: 16px; line-height: 25px; letter-spacing: -0.48px;
+  color: var(--dim); text-decoration: none; transition: color .3s ease;
+  display: inline-flex; align-items: center; gap: 0; white-space: nowrap;
+}
+/* Hover, as on palantir.com's menus: a dash slides in before the item and the item darkens to ink.
+   The section in view gets the same look. */
+.toc a::before { content: "\2014"; display: inline-block; width: 0; overflow: hidden; white-space: nowrap; opacity: 0;
+  transition: width .35s cubic-bezier(.22, 1, .36, 1), margin-right .35s cubic-bezier(.22, 1, .36, 1), opacity .25s ease; }
+.toc a:hover, .toc a.on { color: var(--ink); }
+/* Sub-items, as on rachelchen.tech: always shown, same type, indented 12px under their section;
+   every top-level item after the first gets 6px more room above it, so the groups read apart. */
+.toc li.sub { padding-left: 12px; }
+.toc li:not(.sub):not(:first-child) { margin-top: 6px; }
+.toc a:hover::before, .toc a.on::before { width: 1em; margin-right: 6px; opacity: 1; }
+/* When a section becomes the current one, its item blinks on, as palantir.com's section menu does:
+   on, off, on, off, on in quick hard cuts, then it stays on. */
+.toc a.on span { animation: toc-blink .4s linear; }   /* the words blink; the dash just slides in */
+@keyframes toc-blink {
+  0%, 14% { opacity: 1; } 15%, 29% { opacity: 0; } 30%, 44% { opacity: 1; } 45%, 59% { opacity: 0; }
+  60%, 74% { opacity: 1; } 75%, 89% { opacity: 0; } 90%, 100% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .toc a.on span { animation: none; } }
+/* The menu sits on column 1. Below 1200px the hero image spans every column, so the menu hides at the same point. */
+@media (max-width: 1199px) { .toc { display: none; } }
+
+/* No reveal on scroll: every block is simply there. (The .rv classes in the markup are inert.) */
+
+@media (max-width: 639px) {
+  :root { --pad: 16px; }
+  .bar { height: 104px; }
+  .back { top: 40px; }
+  .blob { top: calc(32px / var(--k, 1)); }   /* offsets are divided by k because zoom scales them too */
+  .hero h1 { margin-top: 40px; margin-bottom: 32px; }
+  .body { padding-top: 48px; }
+  .meta { margin-bottom: 48px; }
+  .trio { grid-template-columns: 1fr; gap: 32px; }
+  .pair { grid-template-columns: 1fr; gap: 24px; }
+  .h537, .h486, .h439 { height: auto; aspect-ratio: 846 / 486; }
+  .h345, .h352, .h340 { height: auto; aspect-ratio: 846 / 345; }
+  .ph .note.small { left: 16px; right: 16px; top: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page, .slide > .layer { animation: none; }
+}
+
+/* Custom cursor, same as the home page: mouse and trackpad only. */
+@media (hover: hover) and (pointer: fine) { html.has-cursor, html.has-cursor * { cursor: none !important; } }
+.cursor { position: fixed; left: 0; top: 0; width: 30px; height: 30px; pointer-events: none; z-index: 1000; opacity: 0; transition: opacity .2s ease; }
+.cursor.on { opacity: 1; }
+.c-body { position: absolute; inset: 0; transform-origin: 15.6px 14.1px; transition: transform .25s cubic-bezier(.3, 1.3, .5, 1); }
+.c-halo, .c-core { position: absolute; left: 4px; top: 4px; width: 20.5px; height: 20px; overflow: visible; transform-origin: 11.6px 10.1px; transition: transform .42s cubic-bezier(.25, 1.18, .4, 1); }
+.c-halo svg { position: absolute; inset: 0; overflow: visible; }
+.c-halo { transform: scale(.5); }
+.c-glass {
+  position: absolute; inset: 0;
+  clip-path: path("M1.53302 6.13207C0.820823 3.28329 3.31862 0.663724 6.19805 1.23961L16.7845 3.35689C18.6542 3.73083 20 5.37249 20 7.27922V12.9269C20 14.7391 18.7817 16.3249 17.0307 16.7918L8.9258 18.9531C6.76764 19.5286 4.5563 18.2252 4.01458 16.0583L1.53302 6.13207Z");
+  background: linear-gradient(170deg, rgba(240, 205, 199, .45), rgba(217, 150, 140, .28));
+  -webkit-backdrop-filter: blur(4px) saturate(1.6) brightness(1.06); backdrop-filter: blur(4px) saturate(1.6) brightness(1.06);
+}
+.cursor.hover .c-halo { transform: scale(1.35); }
+.cursor.hover .c-core { transform: scale(.6); }
+.cursor.press .c-body { transform: scale(.88); }
+
+/* Grid overlay (press G): the home page's column grid, drawn over the case study so both pages can be checked
+   against the same columns. Same steps as the home page: 16 / 20 / 24 columns on large screens, 8 and 4 below. */
+.grid-overlay { --cols: 16; --gutter: 32px; --margin: 80px;
+  position: fixed; inset: 0; z-index: 9000; pointer-events: none; opacity: 0; transition: opacity .2s ease;
+  max-width: 3840px; margin-inline: auto;
+  padding-left: max(var(--margin), env(safe-area-inset-left, 0px)); padding-right: max(var(--margin), env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); column-gap: var(--gutter); }
+@media (min-width: 2000px) { .grid-overlay { --cols: 20; } }
+@media (min-width: 2880px) { .grid-overlay { --cols: 24; } }
+@media (max-width: 1439px) { .grid-overlay { --gutter: 24px; --margin: 48px; } }
+@media (max-width: 1079px) { .grid-overlay { --cols: 8; --gutter: 24px; --margin: 32px; } }
+@media (max-width: 639px) { .grid-overlay { --cols: 4; --gutter: 16px; --margin: 16px; } }
+.grid-overlay span { position: relative; background: rgba(232, 72, 85, 0.07); box-shadow: inset 1px 0 rgba(232, 72, 85, 0.25), inset -1px 0 rgba(232, 72, 85, 0.25); }
+.grid-overlay b, .grid-overlay i { position: absolute; left: 0; right: 0; text-align: center; font: 600 10px/1 ui-monospace, "SF Mono", Menlo, monospace;
+  font-style: normal; color: rgba(200, 40, 60, 0.75); font-variant-numeric: tabular-nums; }
+.grid-overlay b { top: 8px; }
+.grid-overlay i { top: 21px; font-weight: 400; color: rgba(200, 40, 60, 0.5); }
+.grid-info { position: fixed; left: max(12px, env(safe-area-inset-left, 0px)); bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index: 9001;
+  pointer-events: none; padding: 6px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 0.5px rgba(200, 40, 60, 0.35), 0 1px 3px rgba(0, 0, 0, 0.12);
+  font: 500 11px/1.3 ui-monospace, "SF Mono", Menlo, monospace; color: rgba(150, 30, 45, 0.95); font-variant-numeric: tabular-nums;
+  opacity: 0; transition: opacity .2s ease; max-width: calc(100vw - 24px); }
+.grid-info b { color: #c8283c; margin-right: 2px; }
+.grid-info span { color: rgba(150, 30, 45, 0.55); margin-left: 6px; }
+.grid-rows { position: absolute; left: 0; right: 0; top: 0; z-index: 8999; pointer-events: none; opacity: 0; transition: opacity .2s ease;
+  background-image: repeating-linear-gradient(to bottom, rgba(40, 110, 220, 0.30) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(to bottom, rgba(40, 110, 220, 0.12) 0 1px, transparent 1px 8px); }
+html.show-grid .grid-overlay, html.show-grid .grid-info, html.show-grid .grid-rows { opacity: 1; }
+
+/* ---------- Vertical rhythm: one value per recurring pattern, all on the 4px scale ----------
+   12  label → title, title → body, heading → asset, text → asset, asset → caption
+   16  paragraph → paragraph
+   24  intro line → the subheading it introduces
+   48  before a subsection (h3, or a block that opens one)
+   80  before a major subsection (h2.mid) and before a section rule
+   64  section rule → the next section's label
+   Inside a section, neighbouring margins collapse to the larger one, so each pattern is set as a margin-top
+   with the margin above it kept at or below 12. A section is a grid item, so margins never cross its edges:
+   the last block of a section drops its bottom margin and the rule carries the whole 80. */
+.body .label { margin-bottom: 12px; }
+.body h3, .body h3.strong { margin-bottom: 12px; }
+.body h3 { margin-top: 48px; }
+.body h2.mid { margin-top: 80px; }
+.body .rule { margin-top: 80px; margin-bottom: 64px; }   /* top and bottom only: the page grid centres the rules that sit directly in it with margin-left */
+.body section > :last-child,
+.body section > .rv:last-child > :last-child,
+.body .pair > div > :last-child { margin-bottom: 0; }
+/* Text right before an asset sits 12px above it, whatever the asset is. */
+.body :is(.ph, .clip, .stack, .pair:not(.text), .trio, .anat-pair, .shapes) { margin-top: 12px; }
+/* ...but not the assets inside a row: those start flush with their neighbours. */
+.body :is(.pair, .anat-pair, .shapes, .trio) :is(.ph, .clip) { margin-top: 0; }
+.body :is(p, ul, h2, h3):has(+ :is(.ph, .clip, .stack, .pair:not(.text), .trio, .anat-pair, .shapes)),
+.body .rv:has(+ :is(.ph, .clip, .stack, .pair:not(.text), .trio, .anat-pair, .shapes)) > :last-child { margin-bottom: 12px; }
+/* Reflections: the two text columns open 24px under the title, like an intro line before its subheading. */
+.body .pair.text { margin-top: 24px; }
+.body .pair.text h3.strong { margin-top: 0; }
+@media (max-width: 1079px) { .body .trio { margin-top: 12px; } }
+</style>
+</head>
+<body>
+<div class="page">
+<header class="bar">
+  <a class="back" href="index.html">back</a>
+  <a class="blob" href="#" aria-label="samirad. home" aria-describedby="blob-tip"><img src="img/blob.svg" alt=""><canvas aria-hidden="true"></canvas><span class="tip" id="blob-tip" role="tooltip">Start voice <kbd aria-label="Control Shift V">⌃⇧V</kbd></span></a>
+</header>
+
+<div class="hero">
+  <h1>Understand language <b>in context</b></h1>
+  <div class="gframe"><div class="slide" data-bg="dusk">
+      <canvas></canvas>
+      <div class="layer">
+        <div class="lift l1">
+          <div class="at glass" style="--x:143;--y:234;--w:224.5;--h:346.5"></div>
+          <div class="at shot" style="--x:149;--y:240;--w:212.5;--h:462"><video src="img/phone-1.mp4" poster="img/phone-1-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="Adding a song to the word lurch, recorded in the app"></video></div>
+        </div>
+        <div class="lift l1">
+          <div class="at glass" style="--x:491.5;--y:234;--w:224.5;--h:346.5"></div>
+          <div class="at shot cropped" style="--x:497.5;--y:240;--w:212.5;--h:462"><video src="img/phone-3.mp4" poster="img/phone-3-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="Adding a new word, recorded in the app"></video></div>
+        </div>
+        <div class="lift l2">
+          <div class="at glass" style="--x:317;--y:194.5;--w:224.5;--h:346.5"></div>
+          <div class="at shot" style="--x:323;--y:201;--w:212.5;--h:462"><video src="img/phone-2.mp4" poster="img/phone-2-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="Flash card for effervescent, recorded in the app"></video></div>
+        </div>
+      </div>
+    </div></div>
+</div>
+
+<main class="body">
+  <nav class="toc" aria-label="Contents">
+    <ol>
+      <li><a href="#overview"><span>overview</span></a></li>
+      <li><a href="#beyond-definition"><span>beyond the definition</span></a></li>
+      <li><a href="#solution"><span>solution</span></a></li>
+      <li><a href="#type-of-context"><span>type of context</span></a></li>
+      <li class="sub"><a href="#exploration-context"><span>exploration</span></a></li>
+      <li class="sub"><a href="#solution-cards"><span>solution</span></a></li>
+      <li><a href="#beyond-material"><span>beyond the material</span></a></li>
+      <li class="sub"><a href="#exploration-thoughts"><span>exploration</span></a></li>
+      <li class="sub"><a href="#solution-prompt"><span>solution</span></a></li>
+      <li><a href="#reflections"><span>reflections</span></a></li>
+    </ol>
+  </nav>
+
+  <dl class="meta rv">
+    <div><dt>Timeline</dt><dd>Sep - Nov 2026</dd></div>
+    <div><dt>Scope</dt><dd>Product Design<br>iOS Engineering</dd></div>
+  </dl>
+
+  <section id="overview">
+    <div class="rv">
+      <p class="label">Overview</p>
+      <h2>How might learners collect moments that teach them what a word really <i>means</i>?</h2>
+      <p>The idea grew out of a personal frustration: I could recognize plenty of words and understand their definitions, yet still struggle to use them naturally in context.</p>
+    </div>
+    <!-- Card stack (Figma 194:256): nine quote cards, each placed by the centre of its rotated bounds in the 763 x 452 frame. -->
+    <div class="stack" role="img" aria-label="A scattered stack of flash cards, each a word in a quote from a film or song">
+      <div class="stage"><div class="canvas">
+        <div class="card" style="--bx:323;--by:-95;--bw:292.816;--bh:334.148;--r:10.8deg;--bg:#ff8990;--fg:#6a0024;--i:0"><b>cleanse the palate</b><p>Between the courses to cleanse the palate.</p><small>Princess Diaries</small></div>
+        <div class="card" style="--bx:553;--by:-30;--bw:260.371;--bh:308.926;--r:-3.68deg;--bg:#7560d8;--fg:#eff1ee;--i:1"><b>without fail</b><p>Oh, Rapunzel. How you manage to do this everyday without fail, it looks absolutely exhausting, darling.</p><small>Tangled</small></div>
+        <div class="card" style="--bx:112;--by:-51.54;--bw:310.333;--bh:346.962;--r:-15.13deg;--bg:#23aebe;--fg:#ffffff;--i:2"><b>eyes and ears</b><p>They still need someone there.<br>Like, American eyes and ears to help with the whole transition.</p><small>Emily in Paris</small></div>
+        <div class="card" style="--bx:-74;--by:-41;--bw:307.249;--bh:344.757;--r:14.33deg;--bg:#00a15d;--fg:#00502e;--i:3"><b>not up to code</b><p>I’m a city inspector, and this pipe is definitely not up to code.</p><small>Elemental</small></div>
+        <div class="card" style="--bx:-91;--by:149.46;--bw:342.735;--bh:368.239;--r:-24.71deg;--bg:#bba5e9;--fg:#46418b;--i:4"><b>melancholia</b><p>And you don’t really read into<br>My melancholia</p><small>Lavender Haze</small></div>
+        <div class="card" style="--bx:136;--by:186.46;--bw:286.376;--bh:329.278;--r:-9.31deg;--bg:#7bc1e2;--fg:#ec3813;--i:5"><b>heads in the clouds</b><p>Meet the residents of Element City.<br>Air usually has their heads in the clouds.</p><small>Elemental</small></div>
+        <div class="card" style="--bx:366;--by:173.46;--bw:274.841;--bh:320.377;--r:6.74deg;--bg:#fa3c08;--fg:#f9f1eb;--i:6"><b>tied up</b><p>Rather be tied up with calls and not strings.</p><small>Seven Rings</small></div>
+        <div class="card" style="--bx:267;--by:72;--bw:270.735;--bh:317.158;--r:5.86deg;--bg:#313176;--fg:#f4d1c1;--i:7"><b>whine</b><p>Andy, be serious.<br>You are not trying. You are whining.<br>What is it that you want me to say to you, huh?</p><small>The Devil Wears Prada</small></div>
+        <div class="card" style="--bx:543;--by:192;--bw:323.078;--bh:355.794;--r:-18.58deg;--bg:#a3d99f;--fg:#53310e;--i:8"><b>annual</b><p>That’s the funny thing about birthdays. They’re kind of an annual thing.</p><small>Tangled</small></div>
+      </div></div>
+    </div>
+    <p class="rv">I took the project from ideation to launch, owning both product design and development.</p>
+
+    <div class="rv">
+      <h3 class="strong">Problem: Knowing a word doesn't mean knowing when to use it.</h3>
+      <p>We encounter language through media. A sentence in a book, a line in a film, or a lyric might reveal something memorable about a word. But that insight often gets separated from the word and forgotten.</p>
+    </div>
+    <div class="clip rv"><video src="img/mess-with.mp4" poster="img/mess-with-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="Film clips using mess with in different senses: Elemental, The Smurfs and Rio"></video></div>
+    <p class="rv">Definitions don’t capture the full nuance of a word. A word can carry different meanings, tones, and implications depending on its context.</p>
+  </section>
+
+  <hr class="rule">
+
+  <section id="beyond-definition">
+    <div class="rv">
+      <p class="label">Beyond the definition</p>
+      <h2>What shapes our understanding of a word?</h2>
+    </div>
+    <div class="trio rv">
+      <div class="tcard" tabindex="0"><div class="ph-img"><img src="img/photo-context.jpg" alt="" loading="lazy" style="--l:0.02%;--t:-49.46%;--w:121.35%;--h:209.34%"></div><div class="vig"></div><div class="wash"></div><div class="txt"><h4>Context</h4><div class="more"><div><p>A word's meaning is shaped by the material surrounding it: the sentence, image, conversation, or scene in which it appears.</p></div></div></div></div>
+      <div class="tcard alt" tabindex="0"><div class="ph-img"><img src="img/photo-interpretation.jpg" alt="" loading="lazy" style="--l:-55.84%;--t:-62.12%;--w:211.34%;--h:161.94%"></div><div class="vig"></div><div class="wash"></div><div class="txt"><h4>Interpretation</h4><div class="more"><div><p>Learners bring their own observations, associations, and perspectives to the words they encounter.</p></div></div></div></div>
+      <div class="tcard" tabindex="0"><div class="ph-img"><img src="img/photo-connection.jpg" alt="" loading="lazy" style="--l:-0.12%;--t:-0.06%;--w:100%;--h:153.33%"></div><div class="vig"></div><div class="wash"></div><div class="txt"><h4>Connection</h4><div class="more"><div><p>A word can take on different nuances across situations. Comparing different usages reveal patterns, contrasts, and subtle shifts in meaning.</p></div></div></div></div>
+    </div>
+    <script>
+    /* Touch screens have no hover: a tap opens a card's description, tapping it again (or another card) closes it. */
+    if (!matchMedia("(hover: hover)").matches) document.querySelectorAll(".tcard").forEach(function (c, _, all) {
+      c.addEventListener("click", function () { var was = c.classList.contains("open"); all.forEach(function (o) { o.classList.remove("open"); }); if (!was) c.classList.add("open"); });
+    });
+    </script>
+
+    <div class="rv">
+      <h3 class="strong" style="margin-top:48px;color:var(--clay)">Opportunity</h3>
+      <h2>What if learners can capture information anchored to <i>context</i>?</h2>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="solution">
+    <div class="rv">
+      <p class="label">Solution</p>
+      <h2>Multimodal flashcards with semantic tags</h2>
+      <p>Flashcards power text, audio and video, allowing context to be captured in its native form, whether you encounter a word in a book, image, song, or conversation.</p>
+      <p>A word no longer correlates with a definition 1-to-1. Instead, word is the central organizing unit. Media, personal notes, semantic tags all connect back to it.</p>
+    </div>
+    <h3 class="rv" style="margin-top:48px">When you watch Ratatouille or listen to TS’s new song...</h3>
+    <!-- "Creating flashcards" demo on the lavender Figma frame. -->
+    <div class="ph bgopt rv" style="--opt:#cfcbfb;--line:#bab7d6"><span class="cap" style="color:#3B3669">Creating flashcards</span><div class="phone"><video src="img/demo-v4.mp4" poster="img/demo-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="Creating an image card for hork sth down and a music card for read into sth, recorded in the app"></video></div></div>
+    <h3 class="rv">Log your interpretation and categorize meaning layers</h3>
+    <!-- "Personal notes & semantic tags" demo, same lavender frame and iPhone as "Creating flashcards". -->
+    <div class="ph bgopt rv" style="--opt:#cfcbfb;--line:#bab7d6"><span class="cap" style="color:#3B3669">Personal notes &amp; semantic tags</span><div class="phone"><video src="img/notes-tags.mp4" poster="img/notes-tags-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="Writing context on a card for asterisk, then filtering its cards by tag, recorded in the app"></video></div></div>
+
+    <hr class="rule">
+
+    <div class="rv" id="type-of-context">
+      <p class="label">Type of context</p>
+      <h2>What does context consist of?</h2>
+      <p>My research shows that human remembers better when context of retrieval matches with context that was there when we formed the memory in the first place.</p>
+    </div>
+    <div class="pair rv">
+      <div><div class="ph h211 photo"><img src="img/situational-context.jpg" alt="Floor plan of a building with rooms arranged around a central courtyard, each room holding different objects" loading="lazy"></div><p class="ptitle">Situational context</p><p>Place and time during which we consumed the material</p></div>
+      <div><div class="ph h211 mf-slot" role="img" aria-label="Animated conversation, What? So What? Now What? reflection framework. What happened? People gets attention on social media. Why is that important? These media platforms orchestrate the flow of attention. How do you feel about that reality? Now I realized that my attention is being regulated by these platforms."><div class="mf-card" id="mf-card" aria-hidden="true"><p class="caption">What? So What? Now What? reflection framework</p></div></div><p class="ptitle">Material storyline</p><p>Meaning of the story settings from the material</p></div>
+    </div>
+
+    <div class="rv">
+      <h2 class="mid" id="exploration-context">Exploration: Capturing context</h2>
+      <p>First, I thought of recreating the moment learners engaged with the material.</p>
+      <h3 style="margin-top:24px">All-encompassing cards</h3>
+      <p>User describes their whereabouts, what they are doing, hearing or seeing, and when it is in their own voice, along side with the material. Here, context is understood as physical surrounding.</p>
+    </div>
+    <div class="anat-pair rv">
+      <div class="anat" id="anat" role="region" aria-roledescription="carousel" aria-label="Information anatomy of each card type" tabindex="0">
+        <div class="anat-deck" aria-live="polite">
+          <figure class="anat-card"><img src="img/anatomy/book.jpg" alt="Book card anatomy: time, location or sound, content, source, visual, avatar, author and title" draggable="false"></figure>
+          <figure class="anat-card"><img src="img/anatomy/film.jpg" alt="Film card anatomy: visual and quoted line" draggable="false"></figure>
+          <figure class="anat-card"><img src="img/anatomy/music.jpg" alt="Music card anatomy: author, title, visual, content and source" draggable="false"></figure>
+          <figure class="anat-card"><img src="img/anatomy/substack.jpg" alt="Substack card anatomy: author, time, avatar and content" draggable="false"></figure>
+          <figure class="anat-card"><img src="img/anatomy/news.jpg" alt="News card anatomy: visual, title, time, author, content and source" draggable="false"></figure>
+          <figure class="anat-card"><img src="img/anatomy/tweet.jpg" alt="Tweet card anatomy: author, avatar, source, content, visual and time" draggable="false"></figure>
+          <figure class="anat-card"><img src="img/anatomy/instagram.jpg" alt="Instagram post anatomy: author, avatar, location or sound, visual, content and time" draggable="false"></figure>
+          <p class="anat-ia anat-type" aria-hidden="true"></p>
+          <p class="anat-ia" aria-hidden="true">Information Anatomy</p>
+        </div>
+      </div>
+      <!-- The prototype beside the anatomy deck: same lavender frame and iPhone as the demos under "Solution". -->
+      <div class="ph bgopt anat-proto" style="--opt:#cfcbfb;--line:#bab7d6"><div class="phone"><video src="img/book-card.mp4" poster="img/book-card-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="The word asterisk with a music card and a book card: switching between stacked and list view, tapping the book card to play its feeling, and opening the new card sheet, recorded in the app"></video></div></div>
+    </div>
+
+    <div class="rv" style="margin-top:48px">
+      <p>Next, I thought of engaging with the original source more closely through templates.</p>
+      <h3 style="margin-top:24px">Medium-native cards</h3>
+      <p>Templates follow the visual of content platforms. Here, context is understood through the source branding.</p>
+    </div>
+    <!-- Medium-native cards prototype: same lavender frame and iPhone as "Personal notes & semantic tags". -->
+    <div class="ph bgopt rv" style="--opt:#cfcbfb;--line:#bab7d6"><div class="phone"><video src="img/medium-cards-v2.mp4" poster="img/medium-cards-v2-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="The word asterisk with cards styled after Reddit, X, Instagram, Threads and podcast apps, recorded in the app"></video></div></div>
+
+    <div class="rv">
+      <h3>Learning from user feedback!</h3>
+      <p>While physical surrounding and content platforms have an impact on their memory, users tend to associate meanings of a word with the material storyline.</p>
+    </div>
+
+    <div class="rv">
+      <h2 class="mid" id="solution-cards">Solution: Multimodal cards</h2>
+      <p>Finally, I explored a media-led approach to capturing context. Here, context is understood through <em>material representation</em>.</p>
+    </div>
+    <div class="clip mm rv"><video id="mm-video" src="img/multimodal-cards.mp4" poster="img/multimodal-cards-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="A Ratatouille scene with the line hork it down, then an image card made from it in the app; a Lavender Haze lyric with read into, then a music card made from it"></video><button class="sound" type="button" aria-pressed="false" aria-controls="mm-video" aria-label="Turn sound on"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.2h2.2L8 3.5v9L4.7 9.8H2.5z" fill="currentColor" stroke-width="1"/><path class="waves" d="M10.6 5.6a3.4 3.4 0 0 1 0 4.8M12.4 3.9a5.8 5.8 0 0 1 0 8.2"/><path class="cross" d="M10.6 6.2l3.6 3.6M14.2 6.2l-3.6 3.6"/></svg></button></div>
+    <p class="rv">Stories are told through different forms of media, but each encounter has a medium that carries its most distinctive qualities. A passage in a book is experienced through text, a song through sound, and a film scene through imagery. Rather than treating every encounter as text, each card foregrounds the medium most relevant to the original material.</p>
+
+    <div class="rv">
+      <h3>Paired with Notes and Semantic Tags</h3>
+      <p style="margin-bottom:0">I found that users need a way to articulate their interpretation of the material. So I introduced</p>
+      <ul>
+        <li>Notes: “What did I make of it?”,</li>
+        <li>Tags: “How does this usage relate to others?”.</li>
+      </ul>
+    </div>
+    <!-- Same "Personal notes & semantic tags" demo as above. -->
+    <div class="ph bgopt rv" style="--opt:#cfcbfb;--line:#bab7d6"><span class="cap" style="color:#3B3669">Personal notes &amp; semantic tags</span><div class="phone"><video src="img/notes-tags.mp4" poster="img/notes-tags-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="Writing context on a card for asterisk, then filtering its cards by tag, recorded in the app"></video></div></div>
+
+    <hr class="rule">
+
+    <div class="rv" id="beyond-material">
+      <p class="label">Beyond the material</p>
+      <h2>How can we make it easy to put thoughts into words?</h2>
+    </div>
+    <div class="clip tw rv" role="img" aria-label="One unbroken pen line: a tangled ball of thought unspools into a short handwritten sentence, &ldquo;I think&rdquo;, &ldquo;I feel&rdquo;, then &ldquo;I realize&rdquo;; each slides away to the left as the line leads on into the next tangle">
+      <svg viewBox="0 0 846 554" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <filter id="tw-ink" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7"/>
+            <feDisplacementMap in="SourceGraphic" scale="2.6" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+        </defs>
+        <g class="thread"><path class="thread-path" filter="url(#tw-ink)"/></g>
+      </svg>
+    </div>
+
+    <div class="rv">
+      <h2 class="mid" id="exploration-thoughts">Exploration: Capturing thoughts</h2>
+      <p>I first defined the goal of AI assistance: to help users reflect on the material and articulate their thoughts in their own voice. The intended output wasn't a conversation with AI, but a written description of the user's reflection.</p>
+      <h3 style="margin-top:48px;margin-bottom:12px">Description as the only artifact</h3>
+      <p>This led to an important constraint: chats are disposable.</p>
+      <p>In many AI products, conversations serve as an artifact users can revisit. But scrolling through previous messages can compete with the goal of this experience: offloading thoughts and arriving at a concise written reflection. I wanted to make the description, rather than the conversation, the primary artifact.</p>
+    </div>
+    <!-- Description vs conversation (Figma: multifaceted-flashcards, "4 · Only the description stays"). -->
+    <div class="clip dc rv" role="img" aria-label="Left: the reflection as one description. People get attention on social media, but the platforms orchestrate where it flows. I realize my own attention is being regulated by them. Right: the same reflection as a chat that keeps scrolling. What happened? People get attention on social media. Why is that important? These media platforms orchestrate the flow of attention. How do you feel about that reality? Now I realize that my attention is being regulated by these platforms.">
+      <div class="dc-tile dc-r"><p class="dc-desc" aria-hidden="true">People get attention on social media, but the platforms orchestrate where it flows. I realize my own attention is being regulated by them.</p></div>
+      <div class="dc-tile dc-l"><div class="dc-chat" aria-hidden="true">
+        <!-- Two identical sets: the strip runs up by one set's height and starts again, so the loop has no seam. -->
+        <div class="dc-run">
+          <div class="dc-set">
+            <p class="ai">What happened?</p>
+            <p class="you">People get attention on social media</p>
+            <p class="ai">Why is that important?</p>
+            <p class="you">These media platforms orchestrate the flow of attention</p>
+            <p class="ai">How do you feel about that reality?</p>
+            <p class="you">Now I realize that my attention is being regulated by these platforms.</p>
+          </div>
+          <div class="dc-set">
+            <p class="ai">What happened?</p>
+            <p class="you">People get attention on social media</p>
+            <p class="ai">Why is that important?</p>
+            <p class="you">These media platforms orchestrate the flow of attention</p>
+            <p class="ai">How do you feel about that reality?</p>
+            <p class="you">Now I realize that my attention is being regulated by these platforms.</p>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="rv">
+      <h3 style="margin-top:48px;margin-bottom:12px">Guidance versus influence</h3>
+      <p>The next question was how AI should participate in the reflection process. How much of its response should users see? Should it offer a one-liner, bullet points, or a paragraph? Should it ask a question or challenge the user's perspective?</p>
+    </div>
+    <!-- The shapes an AI response could take (Figma 316:210): a question, bullet points, a paragraph. -->
+    <div class="shapes rv">
+      <div class="shape" role="img" aria-label="A question"><span class="q" aria-hidden="true">?</span></div>
+      <div class="shape" role="img" aria-label="Bullet points"><svg viewBox="0 0 150 56" aria-hidden="true"><g fill="currentColor"><rect x="0" y="0" width="14" height="10" rx="5"/><rect x="0" y="23" width="14" height="10" rx="5"/><rect x="0" y="46" width="14" height="10" rx="5"/></g><g stroke="currentColor" stroke-width="5" stroke-linecap="round"><line x1="35" y1="5" x2="111" y2="5"/><line x1="35" y1="28" x2="139" y2="28"/><line x1="35" y1="51" x2="93" y2="51"/></g></svg></div>
+      <div class="shape" role="img" aria-label="A paragraph"><svg viewBox="0 0 139 90" aria-hidden="true"><g stroke="currentColor" stroke-width="5" stroke-linecap="round"><line x1="3" y1="3" x2="107" y2="3"/><line x1="3" y1="24" x2="136" y2="24"/><line x1="3" y1="45" x2="74" y2="45"/><line x1="3" y1="66" x2="120" y2="66"/><line x1="3" y1="87" x2="92" y2="87"/></g></svg></div>
+    </div>
+    <p class="rv">We want to encourage deeper thinking without influencing what users thought or thinking on their behalf. Free-flow text allows room to riff on ideas, but considering that the material can be a film, book or paywall-gated resources, AI might not have the full context and can hallucinate.</p>
+
+    <div class="rv">
+      <h3 style="margin-top:48px;margin-bottom:12px">Exploring the shape of AI response</h3>
+      <p>I looked at adjacent AI products and noticed that reflective journaling tools often guide users towards clearer thinking with prompts. I decided to go with this direction because prompts provide a direction while letting users think independently.</p>
+    </div>
+    <!-- The two AI response shapes that were tried: same lavender frame and iPhone as the other prototypes. -->
+    <div class="anat-pair ai-pair rv">
+      <div class="ph bgopt anat-proto" style="--opt:#cfcbfb;--line:#bab7d6"><span class="cap" style="color:#3B3669">Sharpen the vague word</span><div class="phone"><video src="img/ai-sharpen.mp4" poster="img/ai-sharpen-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="AI mode on the Context row: the AI picks out a vague word in the spoken reflection and asks what it means, recorded in the app"></video></div></div>
+      <div class="ph bgopt anat-proto" style="--opt:#cfcbfb;--line:#bab7d6"><span class="cap" style="color:#3B3669">Pick the direction</span><div class="phone"><video src="img/ai-direction.mp4" poster="img/ai-direction-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="AI mode on the Context row: the AI offers directions to take the reflection and the user picks one, recorded in the app"></video></div></div>
+    </div>
+
+    <div class="rv">
+      <h2 class="mid" id="solution-prompt">Solution: Condense and Prompt</h2>
+      <p>In the final product, I prompted the model based on multiple reading reflection frameworks and asked AI to do simple edits on grammar and spelling. Users can also share with voice as voice feels like a natural extension of our thoughts.</p>
+    </div>
+    <!-- The chosen design: same lavender frame and iPhone as "Personal notes & semantic tags". -->
+    <div class="ph bgopt rv" style="--opt:#cfcbfb;--line:#bab7d6"><span class="cap" style="color:#3B3669">Condense and prompt</span><div class="phone"><video src="img/ai-condense.mp4" poster="img/ai-condense-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="AI mode on the Context row: the user answers What? So What? Now What? by voice, and each answer is condensed into the description before the next question, recorded in the app"></video></div></div>
+  </section>
+
+  <section id="reflections">
+    <hr class="rule">
+    <div class="rv">
+      <p class="label">Reflections</p>
+      <h2>Designing AI-powered features with AI</h2>
+    </div>
+    <div class="pair text rv">
+      <div><h3 class="strong">Context engineering</h3><p>If AI gives an off answer, the prompt might be over-written or context might not be properly handed over.</p></div>
+      <div><h3 class="strong">Build to decide</h3><p>AI allows me to explore ideas with high-fidelity prototypes and tap into the rich resources of software design. A lot of my realization came from experiencing the actual app in real time.</p></div>
+    </div>
+  </section>
+</main>
+</div>
+
+<div class="cursor" id="cursor" aria-hidden="true">
+  <div class="c-body">
+    <div class="c-halo">
+      <div class="c-glass"></div>
+      <svg width="20.5" height="20" viewBox="0 0 20.5 20" fill="none">
+        <defs>
+          <path id="cur-blob" d="M1.53302 6.13207C0.820823 3.28329 3.31862 0.663724 6.19805 1.23961L16.7845 3.35689C18.6542 3.73083 20 5.37249 20 7.27922V12.9269C20 14.7391 18.7817 16.3249 17.0307 16.7918L8.9258 18.9531C6.76764 19.5286 4.5563 18.2252 4.01458 16.0583L1.53302 6.13207Z"/>
+          <clipPath id="cur-inside"><use href="#cur-blob"/></clipPath>
+          <linearGradient id="cur-rim" x1="0" y1="1" x2="0" y2="19.5" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".45" stop-color="#fff" stop-opacity=".15"/><stop offset="1" stop-color="#fff" stop-opacity=".45"/>
+          </linearGradient>
+        </defs>
+        <g clip-path="url(#cur-inside)"><use href="#cur-blob" stroke="url(#cur-rim)" stroke-width="1.4"/></g>
+        <use href="#cur-blob" stroke="#C9695A" stroke-opacity=".35" stroke-width=".5"/>
+      </svg>
+    </div>
+    <svg class="c-core" width="20.5" height="20" viewBox="0 0 20.5 20" fill="none"><use href="#cur-blob" fill="#C9695A"/></svg>
+  </div>
+</div>
+
+<script>
+/* Gradient renderer from the Portfolio Gradient Animator, with an eased play and pause:
+   motion speeds up when you hover and glides to a stop when you leave. */
+function mountGradient(canvas, opts) {
+  var o = { colors: [], speed: 0.85, flow: 0.28, scale: 0.3, swirl: 0, angle: 180, grain: 0.035, seed: 0 };
+  for (var k in opts) o[k] = opts[k];
+  var gl = canvas.getContext("webgl", { premultipliedAlpha: false, alpha: true, antialias: false });
+  if (!gl) { canvas.style.background = "linear-gradient(" + o.angle + "deg," + o.colors.join(",") + ")"; return { play: function () {}, pause: function () {} }; }
+  var VS = "attribute vec2 a;varying vec2 vUv;void main(){vUv=a*.5+.5;gl_Position=vec4(a,0.,1.);}";
+  var FS = [
+    "precision highp float;varying vec2 vUv;",
+    "uniform vec2 uRes;uniform float uTime,uFlow,uScale,uSwirl,uAngle,uGrain,uSeed;uniform vec3 uC[5];",
+    "vec3 permute(vec3 x){return mod(((x*34.)+1.)*x,289.);}",
+    "float snoise(vec2 v){const vec4 C=vec4(.211324865405187,.366025403784439,-.577350269189626,.024390243902439);",
+    " vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);vec2 i1=(x0.x>x0.y)?vec2(1.,0.):vec2(0.,1.);",
+    " vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;i=mod(i,289.);",
+    " vec3 p=permute(permute(i.y+vec3(0.,i1.y,1.))+i.x+vec3(0.,i1.x,1.));",
+    " vec3 m=max(.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.);m=m*m;m=m*m;",
+    " vec3 x=2.*fract(p*C.www)-1.;vec3 h=abs(x)-.5;vec3 ox=floor(x+.5);vec3 a0=x-ox;",
+    " m*=1.79284291400159-.85373472095314*(a0*a0+h*h);",
+    " vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;return 130.*dot(m,g);}",
+    "float fbm(vec2 p){float v=0.,a=.6;for(int i=0;i<3;i++){v+=a*snoise(p);p=p*1.9+vec2(1.7,9.2);a*=.35;}return v;}",
+    "vec3 ramp(float t){t=clamp(t,0.,1.)*4.;vec3 c=uC[0];",
+    " c=mix(c,uC[1],clamp(t,0.,1.));c=mix(c,uC[2],clamp(t-1.,0.,1.));",
+    " c=mix(c,uC[3],clamp(t-2.,0.,1.));c=mix(c,uC[4],clamp(t-3.,0.,1.));return c;}",
+    "float hash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}",
+    "void main(){float asp=uRes.x/uRes.y;vec2 p=(vUv-.5)*vec2(asp,1.);float t=uTime;",
+    " vec2 dir=vec2(sin(uAngle),-cos(uAngle));",
+    " float base=dot(p,dir)/(abs(dir.x)*asp*.5+abs(dir.y)*.5)*.5+.5;",
+    " vec2 q=p*uScale+uSeed;",
+    " vec2 w=vec2(fbm(q*.6+vec2(0.,t*.11)),fbm(q*.6+vec2(5.2,1.3)-vec2(t*.07,t*.05)));",
+    " float sa2=sin(uSwirl*2.*w.x),ca2=cos(uSwirl*2.*w.x);q=mat2(ca2,-sa2,sa2,ca2)*q;",
+    " float n=fbm(q+1.7*w+vec2(t*.05,-t*.04));",
+    " vec3 col=ramp(base+uFlow*(n*.6+w.y*.3));",
+    " col+=(hash(gl_FragCoord.xy+fract(t*7.)*91.)-.5)*uGrain;",
+    " gl_FragColor=vec4(col,1.);}"
+  ].join("\n");
+  function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+  var pr = gl.createProgram();
+  gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  var al = gl.getAttribLocation(pr, "a"); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
+  var U = {}; ["uRes", "uTime", "uFlow", "uScale", "uSwirl", "uAngle", "uGrain", "uSeed", "uC"].forEach(function (n) { U[n] = gl.getUniformLocation(pr, n); });
+  function rgb(h) { h = h.replace("#", ""); return [0, 2, 4].map(function (i) { return parseInt(h.substr(i, 2), 16) / 255; }); }
+  var cols = []; o.colors.forEach(function (c) { cols = cols.concat(rgb(c)); });
+  var t = 4 + o.seed * 3, last = 0, raf = 0, cur = 0, target = 0;
+  function draw() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = Math.max(1, Math.round(canvas.clientWidth * dpr)), h = Math.max(1, Math.round(canvas.clientHeight * dpr));
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    gl.viewport(0, 0, w, h);
+    gl.uniform2f(U.uRes, w, h); gl.uniform1f(U.uTime, t); gl.uniform1f(U.uFlow, o.flow); gl.uniform1f(U.uScale, o.scale);
+    gl.uniform1f(U.uSwirl, o.swirl); gl.uniform1f(U.uAngle, (180 - o.angle) * Math.PI / 180); gl.uniform1f(U.uGrain, o.grain);
+    gl.uniform1f(U.uSeed, o.seed * 7.31); gl.uniform3fv(U.uC, cols);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  function loop(now) {
+    var dt = last ? Math.min(0.1, (now - last) / 1000) : 0; last = now;
+    cur += (target - cur) * (1 - Math.exp(-dt * (target > cur ? 3.2 : 2.2)));   // ease in, glide out
+    t += dt * o.speed * cur; draw();
+    if (target > 0 || cur > 0.003) raf = requestAnimationFrame(loop); else { raf = 0; cur = 0; }
+  }
+  function kick() { if (!raf) { last = 0; raf = requestAnimationFrame(loop); } }
+  if (window.ResizeObserver) new ResizeObserver(function () { if (!raf) draw(); }).observe(canvas);
+  draw();
+  return { play: function () { target = 1; kick(); }, pause: function () { target = 0; kick(); } };
+}
+
+/* Figma slide gradients (3 stops each), resampled into the renderer's 5 even stops. */
+var SLIDE_BG = {
+  dusk:  [[0.0653, "#cfcbfb"], [0.54, "#d77261"], [0.92388, "#4a3e3e"]],
+  sky:   [[0.0653, "#69b9ff"], [0.54, "#4f7c43"], [0.92388, "#4a3e3e"]],
+  ember: [[0.0653, "#5d954a"], [0.5111, "#4a3e3e"], [0.92388, "#fa7232"]]
+};
+/* Motion per slide, all with large blobs, no swirl, 180° and grain 33%.
+   Sky: speed 1.5, flow 0.46. Dusk and Ember: speed 1.3, flow 0.41. */
+var SLIDE_MOTION = {
+  dusk:  { speed: 1.3, flow: 0.41, scale: 0.3, swirl: 0, angle: 180, grain: 0.04 },
+  sky:   { speed: 1.5, flow: 0.46, scale: 0.3, swirl: 0, angle: 180, grain: 0.04 },
+  ember: { speed: 1.3, flow: 0.41, scale: 0.3, swirl: 0, angle: 180, grain: 0.04 }
+};
+function hexToRgb(h) { return [1, 3, 5].map(function (i) { return parseInt(h.substr(i, 2), 16); }); }
+function toHex(c) { return "#" + c.map(function (v) { return ("0" + Math.round(v).toString(16)).slice(-2); }).join(""); }
+function resample(stops) {
+  return [0, .25, .5, .75, 1].map(function (x) {
+    if (x <= stops[0][0]) return stops[0][1];
+    for (var i = 1; i < stops.length; i++) if (x <= stops[i][0]) {
+      var f = (x - stops[i - 1][0]) / (stops[i][0] - stops[i - 1][0]), a = hexToRgb(stops[i - 1][1]), b = hexToRgb(stops[i][1]);
+      return toHex(a.map(function (v, k) { return v + (b[k] - v) * f; }));
+    }
+    return stops[stops.length - 1][1];
+  });
+}
+
+var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+var canHover = matchMedia("(hover: hover) and (pointer: fine)").matches;
+document.querySelectorAll(".slide").forEach(function (slide, i) {
+  var stops = SLIDE_BG[slide.dataset.bg];
+  // resting state: the gradient exactly as it is in Figma
+  slide.style.background = "linear-gradient(173.46deg, " + stops.map(function (s) { return s[1] + " " + (s[0] * 100).toFixed(2) + "%"; }).join(", ") + ")";
+  slide.parentElement.style.setProperty("--bg", slide.style.background);   // tints the glass frame
+  if (reduce) return;   // reduced motion: keep the still Figma gradient, no live canvas
+  var opts = { colors: resample(stops), seed: i * 1.7 };
+  var tuned = SLIDE_MOTION[slide.dataset.bg]; for (var k in tuned) opts[k] = tuned[k];
+  var g = mountGradient(slide.querySelector("canvas"), opts);
+  function on() { slide.classList.add("live"); g.play(); }
+  function off() { slide.classList.remove("live"); g.pause(); }
+  if (canHover) {
+    slide.addEventListener("pointerenter", on);
+    slide.addEventListener("pointerleave", off);
+    slide.addEventListener("focus", on); slide.addEventListener("blur", off);
+  } else if ("IntersectionObserver" in window) {
+    // phones have no hover, so a slide flows while it is mostly on screen
+    new IntersectionObserver(function (es) { es.forEach(function (e) { e.isIntersecting ? on() : off(); }); }, { threshold: 0.6 }).observe(slide);
+  }
+});
+
+
+/* Remember that the case study is open, so a refresh of the portfolio lands back here (see index.html). */
+try { sessionStorage.setItem("samirad-page", "context-cards"); } catch (e) {}
+document.querySelectorAll('a[href="index.html"]').forEach(function (a) {
+  // "back" also asks the home page to open at the very top (see index.html)
+  a.addEventListener("click", function () { try { sessionStorage.removeItem("samirad-page"); sessionStorage.setItem("samirad-top", "1"); } catch (e) {} }, true);
+});
+
+/* Going home fades this page out first, mirroring the way it came in. */
+document.querySelectorAll('a[href="index.html"]').forEach(function (a) {
+  a.addEventListener("click", function (e) {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button || reduce) return;
+    e.preventDefault(); document.documentElement.classList.add("leaving");
+    setTimeout(function () { location.href = a.getAttribute("href"); }, 240);
+  });
+});
+addEventListener("pageshow", function () { document.documentElement.classList.remove("leaving"); });
+
+/* Contents: the section in view lights up. */
+(function () {
+  var links = {}; document.querySelectorAll(".toc a").forEach(function (a) { links[a.hash.slice(1)] = a; });
+  var secs = Object.keys(links).map(function (id) { return document.getElementById(id); });
+  function light(cur) { Object.keys(links).forEach(function (id) { links[id].classList.toggle("on", id === cur); }); }
+  // A click lights only the item clicked. While the page glides there, the sections it passes are not
+  // lit (so their blink never fires); tracking resumes once the scroll comes to rest, or as soon as
+  // the reader scrolls on their own.
+  var held = null, lastY = -1, still = 0, watch = 0;
+  function release() { held = null; cancelAnimationFrame(watch); watch = 0; update(); }
+  function settle() {
+    if (scrollY === lastY) { if (++still > 8) return release(); } else { still = 0; lastY = scrollY; }
+    watch = requestAnimationFrame(settle);
+  }
+  Object.keys(links).forEach(function (id) {
+    links[id].addEventListener("click", function () {
+      held = id; light(id); lastY = -1; still = 0;
+      cancelAnimationFrame(watch); watch = requestAnimationFrame(settle);
+    });
+  });
+  ["wheel", "touchstart", "keydown"].forEach(function (t) {
+    addEventListener(t, function () { if (held) release(); }, { passive: true });
+  });
+  function update() {
+    if (held) return;
+    var y = innerHeight * 0.35, cur = null;
+    secs.forEach(function (s) { if (s.getBoundingClientRect().top <= y) cur = s.id; });
+    // At the very bottom, a short last section can never scroll up that far:
+    // light up the last section that is on screen instead.
+    var root = document.documentElement;
+    if (innerHeight + scrollY >= root.scrollHeight - 2)
+      secs.forEach(function (s) { if (s.getBoundingClientRect().top < innerHeight) cur = s.id; });
+    light(cur);
+  }
+  addEventListener("scroll", update, { passive: true }); addEventListener("resize", update); update();
+  // Fix the menu level with the top of the hero image as the page opens; it then stays there
+  // (only the case study scrolls, as on rachelchen.tech).
+  var frame = document.querySelector(".hero .gframe");
+  function docTop(el) { var y = 0; while (el) { y += el.offsetTop; el = el.offsetParent; } return y; }
+  function place() { if (frame) document.documentElement.style.setProperty("--toc-top", docTop(frame) + "px"); }
+  place(); addEventListener("resize", place); addEventListener("load", place);
+  if (document.fonts) document.fonts.ready.then(place);
+})();
+
+/* Title on landing: wrap each letter and let each one flicker up on its own random schedule
+   (start 0–0.55s, rise 0.25–0.55s, brightness jittering as it climbs, some letters snapping straight on),
+   then put the plain text back so the kerning is exact. Skipped for reduced motion. */
+(function () {
+  if (reduce) return;
+  var h = document.querySelector(".hero h1"); if (!h) return;
+  var original = h.innerHTML, letters = [];
+  h.setAttribute("aria-label", h.textContent.replace(/\s+/g, " ").trim());
+  (function wrap(node) {
+    Array.prototype.slice.call(node.childNodes).forEach(function (n) {
+      if (n.nodeType !== 3) return wrap(n);
+      var frag = document.createDocumentFragment();
+      n.textContent.split(/(\s+)/).forEach(function (word) {
+        if (!word) return;
+        if (!word.trim()) { frag.appendChild(document.createTextNode(word)); return; }
+        var w = document.createElement("span"); w.style.whiteSpace = "nowrap";   // words never break mid-letter
+        Array.from(word).forEach(function (ch) {
+          var sp = document.createElement("span"); sp.className = "lt"; sp.setAttribute("aria-hidden", "true");
+          sp.textContent = ch; w.appendChild(sp);
+          var snap = Math.random() < 0.2;
+          letters.push({ el: sp, start: 100 + Math.random() * 550, dur: snap ? 0 : 250 + Math.random() * 300 });
+        });
+        frag.appendChild(w);
+      });
+      n.replaceWith(frag);
+    });
+  })(h);
+  var t0 = performance.now();
+  function frame(now) {
+    var t = now - t0, done = true;
+    letters.forEach(function (l) {
+      var p = l.dur ? (t - l.start) / l.dur : (t >= l.start ? 1 : 0);
+      if (p >= 1) { if (!l.on) { l.el.style.opacity = 1; l.on = true; } return; }
+      done = false;
+      l.el.style.opacity = p <= 0 ? 0 : Math.min(1, p * (0.35 + Math.random() * 0.65)).toFixed(2);   // flicker on the way up
+    });
+    if (!done) requestAnimationFrame(frame);
+    else setTimeout(function () { h.innerHTML = original; h.removeAttribute("aria-label"); }, 150);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* Logo blob: on hover the middle of its gradient warms from clay to orange (#FA7330) and rolls like a sound wave,
+   driven by a made-up speech rhythm (settings from Sound Gradient Studio). Leaving glides it back to the
+   still Figma blob, which is exactly what the canvas draws at rest. */
+(function () {
+  if (reduce || !window.Path2D) return;
+  var blob = document.querySelector(".blob"), cv = blob.querySelector("canvas");
+  var ctx = cv.getContext("2d"); if (!ctx) return;
+  var VW = 39.5954, VH = 38.7258, PAD = 16, TAU = Math.PI * 2;
+  var shape = new Path2D("M0.174493 9.09145C-0.935372 3.97175 3.41199 -0.679598 8.59492 0.0822227L32.4572 3.58965C36.0024 4.11075 38.6837 7.06684 38.8577 10.6459L39.5865 25.6432C39.7578 29.1688 37.4475 32.3368 34.0382 33.2512L14.5895 38.4676C10.4507 39.5777 6.2247 37.0005 5.31684 32.8126L0.174493 9.09145Z");
+  var S = { amp: .11, freq: 1.3, speed: .55, idle: .45, depth: .5, center: .46, width: .02, react: .22, lift: .02, heat: .22, drift: .03, smooth: .3, glow: .3, rim: .15 };
+  var TOP = [201, 105, 90], REST = [137, 83, 74], YEL = [250, 115, 48], BOT = [74, 62, 62];
+  function mix(a, b, k) { return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k]; }
+
+  var OW = 96, OH = Math.round(OW * VH / VW);
+  var off = document.createElement("canvas"); off.width = OW; off.height = OH;
+  var octx = off.getContext("2d"), img = octx.createImageData(OW, OH);
+  var U = new Float32Array(OW), VG = new Float32Array(OH);
+  for (var i = 0; i < OW; i++) U[i] = (i + .5) / OW;
+  for (var j = 0; j < OH; j++) VG[j] = (((j + .5) / OH) * VH + 1.49272) / 42;
+
+  var t = 0, on = 0, hover = false, level = 0, soft = 0, syl = [], next = .12, left = 0, last = 0, raf = 0, hot = YEL;
+  function rand(a, b) { return a + Math.random() * (b - a); }
+  function voice() {
+    if (t >= next) {
+      if (left <= 0) left = Math.round(rand(5, 13));
+      syl.push({ t0: t, amp: rand(.45, 1), dec: rand(.1, .22) });
+      left--; next = t + (left > 0 ? rand(.14, .26) : rand(.45, 1));
+    }
+    var v = 0;
+    for (var k = syl.length - 1; k >= 0; k--) {
+      var s = syl[k], age = t - s.t0, e = age < .035 ? age / .035 : Math.exp(-(age - .035) / s.dec);
+      if (e < .01 && age > .1) { syl.splice(k, 1); continue; }
+      v = Math.max(v, s.amp * e);
+    }
+    return Math.min(1, v);
+  }
+
+  function field() {
+    var mid = mix(REST, YEL, on); hot = mix(mid, [255, 241, 194], .35);
+    var L = soft * on;
+    var c = .408654 + (S.center - .408654) * on + S.drift * Math.sin(t * .6) * on - L * S.lift;   // Figma stop at rest, lower on hover
+    var w = S.width * on + L * S.react * .2;              // 0 at rest: the exact Figma 3-stop gradient
+    var a = Math.max(c - w / 2, .001), b = Math.min(c + w / 2, .999), ph = t * S.speed * TAU;
+    var E = S.amp * (S.idle + (1 - S.idle) * L) * on, reach = .15 + S.depth * .5, hw = w * .5 + .07;
+    var d = img.data, p = 0;
+    for (var j = 0; j < OH; j++) {
+      var vg = VG[j], pz = (vg - c) / reach, prox = Math.exp(-pz * pz) * E, k1 = vg * 4, k2 = vg * 2.5 + 1.3;
+      for (var i = 0; i < OW; i++) {
+        var x = TAU * U[i] * S.freq;
+        var v = vg + prox * (.65 * Math.sin(x - ph + k1) + .35 * Math.sin(x * 1.7 - ph * .6 + k2));
+        v = v < 0 ? 0 : v > 1 ? 1 : v;
+        var r, g, bl, f;
+        if (v < a) { f = v / a; r = TOP[0] + (mid[0] - TOP[0]) * f; g = TOP[1] + (mid[1] - TOP[1]) * f; bl = TOP[2] + (mid[2] - TOP[2]) * f; }
+        else if (v < b) { r = mid[0]; g = mid[1]; bl = mid[2]; }
+        else { f = (v - b) / (1 - b); r = mid[0] + (BOT[0] - mid[0]) * f; g = mid[1] + (BOT[1] - mid[1]) * f; bl = mid[2] + (BOT[2] - mid[2]) * f; }
+        var hz = (v - c) / hw, h = Math.min(1, S.heat * L * Math.exp(-hz * hz));
+        d[p++] = r + (hot[0] - r) * h; d[p++] = g + (hot[1] - g) * h; d[p++] = bl + (hot[2] - bl) * h; d[p++] = 255;
+      }
+    }
+    octx.putImageData(img, 0, 0);
+  }
+
+  function draw() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 3), cw = VW + PAD * 2, ch = VH + PAD * 2;
+    var W = Math.round(cw * dpr), H = Math.round(ch * dpr);
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    var L = soft * on, rgba = function (al) { return "rgba(" + (hot[0] | 0) + "," + (hot[1] | 0) + "," + (hot[2] | 0) + "," + al + ")"; };
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, cw, ch); ctx.translate(PAD, PAD);
+    if (on > .01) {
+      ctx.save(); ctx.shadowColor = rgba(Math.min(1, S.glow * (.25 + .75 * L) * on));
+      ctx.shadowBlur = (2 + S.glow * 9 * (.2 + L)) * dpr; ctx.fillStyle = rgba(1); ctx.fill(shape); ctx.restore();
+    }
+    ctx.save(); ctx.clip(shape); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(off, 0, 0, VW, VH);
+    if (L > .01) {
+      ctx.lineWidth = 2.2; ctx.strokeStyle = rgba(Math.min(1, S.rim * L)); ctx.shadowColor = ctx.strokeStyle; ctx.shadowBlur = 3 * dpr; ctx.stroke(shape);
+    }
+    ctx.restore();
+  }
+
+  function loop(now) {
+    var dt = last ? Math.min(.05, (now - last) / 1000) : 0; last = now;
+    on += ((hover ? 1 : 0) - on) * (1 - Math.exp(-dt / (hover ? .22 : .45)));   // warm up fast, cool down slower
+    t += dt;
+    var target = voice();
+    level += (target - level) * (1 - Math.exp(-dt / (target > level ? .04 : .18)));
+    soft += (level - soft) * (1 - Math.exp(-dt / S.smooth));
+    field(); draw();
+    if (hover || on > .003) raf = requestAnimationFrame(loop);
+    else { raf = 0; on = 0; field(); draw(); }
+  }
+  function kick() { if (!raf) { last = 0; raf = requestAnimationFrame(loop); } }
+  blob.addEventListener("pointerenter", function () { hover = true; kick(); });
+  blob.addEventListener("pointerleave", function () { hover = false; kick(); });
+  blob.addEventListener("focus", function () { hover = true; kick(); });
+  blob.addEventListener("blur", function () { hover = false; kick(); });
+  field(); draw();
+  // Only swap the still blob for the live canvas once the canvas has actually painted it
+  // (some phones refuse canvas work; the still image then stays).
+  try { if (ctx.getImageData(cv.width >> 1, cv.height >> 1, 1, 1).data[3] > 0) blob.classList.add("live"); } catch (e) {}
+})();
+
+document.querySelectorAll('a.blob[href="#"]').forEach(function (a) { a.addEventListener("click", function (e) { e.preventDefault(); }); });
+
+/* Blob size: work out the home page's type scale k for this window, so the blob matches it exactly.
+   On the home page k shrinks below 1 when "samirad." no longer fits its columns, or when a case study
+   title line no longer fits the work column (same grid, so the same numbers apply here). */
+(function () {
+  var root = document.documentElement;
+  function measure(text, css) {
+    var p = document.createElement("span");
+    p.textContent = text;
+    p.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;font-size:36px;letter-spacing:-0.03em;" + css;
+    document.body.appendChild(p); var w = p.getBoundingClientRect().width; p.remove(); return w;
+  }
+  var EXT = "font-family:var(--f-ext);font-weight:700;font-stretch:125%;", WIDE = "font-family:var(--f-wide);font-weight:600;font-stretch:112%;";
+  function k() {
+    var vw = root.clientWidth, siteW = Math.min(vw, 3840);
+    var cols = vw >= 2880 ? 24 : vw >= 2000 ? 20 : vw >= 1080 ? 16 : vw >= 640 ? 8 : 4;
+    var g = vw >= 1440 ? 32 : vw >= 640 ? 24 : 16, m = vw >= 1440 ? 80 : vw >= 1080 ? 48 : vw >= 640 ? 32 : 16;
+    var inner = siteW - 2 * m, c = (inner - (cols - 1) * g) / cols;
+    var span = vw <= 1546 ? 15 : 3;
+    var avail = cols >= 16 ? span * c + (span - 1) * g - Math.max(g, 32) : inner - 42 - g;
+    var workCols = vw >= 2880 ? 16 : vw >= 2000 ? 12 : vw >= 1547 ? 10 : cols;
+    var workW = workCols * c + (workCols - 1) * g;
+    var widest = Math.max(
+      measure("Understand language", WIDE), measure("Think independently", WIDE), measure("Challenge perception", WIDE),
+      measure("in context", EXT), measure("with AI", EXT), measure("through gameplay", EXT));
+    var kk = Math.min(1, avail / measure("samirad.", EXT), (workW - 2) / widest);
+    root.style.setProperty("--k", kk.toFixed(4));
+  }
+  k(); addEventListener("resize", k);
+  if (document.fonts) document.fonts.ready.then(k);
+})();
+
+/* Custom cursor, as on the home page. */
+(function () {
+  if (!canHover) return;
+  document.documentElement.classList.add("has-cursor");
+  var el = document.getElementById("cursor"), x = -100, y = -100, cx = -100, cy = -100, raf = 0;
+  function frame() {
+    var k = reduce ? 1 : 0.32; cx += (x - cx) * k; cy += (y - cy) * k;
+    el.style.transform = "translate3d(" + (cx - 15.6) + "px," + (cy - 14.1) + "px,0)";
+    raf = (Math.abs(x - cx) > 0.1 || Math.abs(y - cy) > 0.1) ? requestAnimationFrame(frame) : 0;
+  }
+  addEventListener("pointermove", function (e) {
+    if (e.pointerType !== "mouse") return;
+    x = e.clientX; y = e.clientY;
+    if (!el.classList.contains("on")) { cx = x; cy = y; el.classList.add("on"); }
+    el.classList.toggle("hover", !!(e.target.closest && e.target.closest("a, button")));
+    if (!raf) raf = requestAnimationFrame(frame);
+  }, { passive: true });
+  document.addEventListener("pointerleave", function () { el.classList.remove("on"); });
+  addEventListener("pointerdown", function () { el.classList.add("press"); });
+  addEventListener("pointerup", function () { el.classList.remove("press"); });
+})();
+/* Grid overlay: the home page's grid, on by default; press G to hide. The readout matches the home page's,
+   with "work" reporting this page's reading column. */
+(function () {
+  var root = document.documentElement, ov = document.createElement("div"), info = document.createElement("div"), rows = document.createElement("div");
+  ov.className = "grid-overlay"; info.className = "grid-info"; rows.className = "grid-rows";
+  for (var i = 1; i <= 24; i++) { var s = document.createElement("span"); s.innerHTML = "<b>" + i + "</b><i></i>"; ov.appendChild(s); }
+  [ov, info, rows].forEach(function (el) { el.setAttribute("aria-hidden", "true"); document.body.appendChild(el); });
+  // The page's real height: the bottom of its content, leaving out these overlays and the redlines layer.
+  // Measuring scrollHeight instead let each overlay hold the page at its old height after a resize.
+  function contentHeight() {
+    var m = innerHeight;
+    [].forEach.call(document.body.children, function (c) {
+      if (c.matches(".grid-rows, .grid-overlay, .grid-info, .sp-layer, .sp-chip, script, style")) return;
+      var cs = getComputedStyle(c); if (cs.position === "fixed" || cs.display === "none") return;
+      m = Math.max(m, c.getBoundingClientRect().bottom + scrollY + (parseFloat(cs.marginBottom) || 0));
+    });
+    return Math.ceil(m);
+  }
+  function update() {
+    rows.style.height = contentHeight() + "px";
+    var cs = getComputedStyle(ov), cols = parseInt(cs.getPropertyValue("--cols"), 10);
+    var spans = ov.querySelectorAll("span");
+    for (var k = 0; k < spans.length; k++) spans[k].style.display = k < cols ? "block" : "none";
+    var first = spans[0].getBoundingClientRect();
+    var gutter = cols > 1 ? spans[1].getBoundingClientRect().left - first.right : 0;
+    var vw = root.clientWidth, siteW = Math.min(vw, 3840), margin = first.left - (vw - siteW) / 2;
+    var bp = vw >= 2880 ? "XXXL" : vw >= 2000 ? "XXL" : vw >= 1440 ? "XL" : vw >= 1080 ? "L" : vw >= 640 ? "M" : "S";
+    for (var k = 0; k < cols; k++) spans[k].querySelector("i").textContent = Math.round(spans[k].getBoundingClientRect().width);
+    var work = document.querySelector(".body > section").getBoundingClientRect().width;   // the reading column
+    var hero = document.querySelector(".hero .gframe").getBoundingClientRect().width;
+    info.innerHTML = "<b>" + bp + "</b> " + vw + "px · " + cols + " columns · column " + first.width.toFixed(1) + "px · gutter " +
+      Math.round(gutter) + "px · margin " + Math.round(margin) + "px · image " + Math.round(hero) + "px · text " + Math.round(work) + "px · rows 8px (bold 64) <span>G hides</span>";
+  }
+  update();
+  addEventListener("resize", update); addEventListener("load", update);
+  if (document.fonts) document.fonts.ready.then(function () { setTimeout(update, 0); });
+  addEventListener("keydown", function (e) {
+    if ((e.key === "g" || e.key === "G") && !e.metaKey && !e.ctrlKey && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) root.classList.toggle("show-grid");
+  });
+})();
+</script>
+<script>
+/* Sound toggle for the multimodal video. Turning sound on starts the clip from the top, so you hear the film line
+   and the lyric in order; keep-playing.js leaves a video marked data-sound="on" unmuted when it restarts it. */
+(function () {
+  var v = document.getElementById("mm-video"), b = v && v.parentElement.querySelector(".sound");
+  if (!b) return;
+  function show() {
+    var on = !v.muted;
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+    b.setAttribute("aria-label", on ? "Mute sound" : "Turn sound on");
+  }
+  b.addEventListener("click", function () {
+    if (v.muted) {
+      v.dataset.sound = "on"; v.muted = false; v.currentTime = 0;
+      var p = v.play(); if (p && p.catch) p.catch(function () { v.muted = true; v.dataset.sound = "off"; });
+    } else { v.muted = true; v.dataset.sound = "off"; }
+  });
+  v.addEventListener("volumechange", show);
+  show();
+})();
+</script>
+<script src="messages-flow.js"></script>
+<script>
+/* Messages flow in the Consumed material slot. Settings come from the Messages Flow Tuner.
+   It starts from the first message when the card scrolls into view and pauses while off screen. */
+(function () {
+  var card = document.getElementById("mf-card"); if (!card || !window.MessagesFlow) return;
+  var slot = card.parentElement;
+  function fit() { card.style.setProperty("--mf-s", (slot.clientWidth / 405).toFixed(4)); }
+  fit(); if (window.ResizeObserver) new ResizeObserver(fit).observe(slot); else addEventListener("resize", fit);
+
+  var still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var flow = MessagesFlow.create(card, {
+    startDelay: 400, step: 1900, moveDuration: still ? 1 : 750, fadeDuration: still ? 1 : 600, scrollLead: 0,
+    hold: 3000, restartGap: 900, enterOffset: 60, enterScale: 1, exitDrift: 0, outroDrift: 20,
+    easing: [0.22, 1, 0.36, 1],
+    wordReveal: !still, wordTarget: "a", wordDelay: 150, wordStagger: 60, wordFade: 400, wordRise: 4, wordBlur: 0,
+    top: 53, gap: 20, maxVisible: 3, loop: true,
+    messages: [
+      { type: "q", text: "What happened?" },
+      { type: "a", text: "People gets attention on social media." },
+      { type: "q", text: "Why is that important?" },
+      { type: "a", text: "These media platforms orchestrate the flow of attention." },
+      { type: "q", text: "How do you feel about that reality?", wrap: true },
+      { type: "a", text: "Now I realized that my attention is being regulated by these platforms." }
+    ]
+  });
+
+  // Visible = at least 40% of the card on screen. A plain scroll check (not IntersectionObserver),
+  // so it also works in embedded previews that throttle rendering.
+  var started = false;
+  function check() {
+    var r = slot.getBoundingClientRect(), vh = innerHeight || document.documentElement.clientHeight;
+    var seen = Math.min(r.bottom, vh) - Math.max(r.top, 0), on = r.height > 0 && seen >= r.height * 0.4;
+    if (on) { if (!started) { started = true; flow.restart(); } else if (flow.paused) flow.resume(); }
+    else if (started && !flow.paused) flow.pause();
+  }
+  addEventListener("scroll", check, { passive: true }); addEventListener("resize", check);
+  addEventListener("load", check); check();
+})();
+</script>
+<script src="anatomy-carousel.js"></script>
+<script src="spacing.js?v=2"></script>
+<script src="no-grain.js"></script>
+<script src="keep-playing.js"></script>
+<script src="thoughts-line.js"></script>
+</body>
+</html>
