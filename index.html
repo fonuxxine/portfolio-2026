@@ -1031,6 +1031,7 @@ document.querySelectorAll('a[href="#"]').forEach(function (a) { a.addEventListen
   btn.addEventListener("click", function (e) { e.preventDefault(); open ? hide() : show(); });
   addEventListener("keydown", function (e) { if (e.key === "Escape" && open) { hide(); btn.focus(); } });
   document.addEventListener("click", function (e) { if (open && !panel.contains(e.target) && e.target !== btn) hide(); });
+  addEventListener("scroll", function () { if (open && panel.getBoundingClientRect().bottom < 0) hide(); }, { passive: true });   // scrolled past it: close
 })();
 </script>
 <script src="spacing.js?v=2"></script>
