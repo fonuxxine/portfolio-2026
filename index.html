@@ -388,7 +388,8 @@ main { position: relative; }
 .about-links a { font-weight: 600; color: var(--dim); text-decoration: none; justify-self: start; transition: color .2s ease; }
 .about-links a:hover, .about-links a:focus-visible { color: var(--ink); }
 .about-cell h3 { margin: 0 0 34px; font: inherit; font-family: var(--f-ext); font-weight: 700; font-stretch: 125%; }
-.about-xp { display: grid; }
+.about > .about-cell { display: flex; flex-direction: column; }   /* Experience: the gap under the heading stretches so the last row sits on the bottom edge */
+.about-xp { display: grid; margin-top: auto; }
 .about-xp div { display: flex; justify-content: space-between; gap: 16px; }
 .about-co { font-weight: 500; text-align: right; }
 .about .w { display: inline-block; }
