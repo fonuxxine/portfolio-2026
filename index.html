@@ -39,6 +39,9 @@ try {
 @font-face { font-family: "Ob Wide"; font-weight: 600; font-display: swap; src: url("fonts/ObviouslyDemo-WideSemibold.otf") format("opentype"); }
 @font-face { font-family: "Ob Ext"; font-weight: 700; font-display: swap; src: url("fonts/ObviouslyDemo-ExtendedBold.otf") format("opentype"); }
 @font-face { font-family: "Ob Semi"; font-weight: 600; font-display: swap; src: url("fonts/ObviouslyDemo-Semibold.otf") format("opentype"); }
+@font-face { font-family: "Ob Reg"; font-weight: 400; font-display: swap; src: url("fonts/ObviouslyDemo-Regular.otf") format("opentype"); }
+@font-face { font-family: "Ob Narrow"; font-weight: 500; font-display: swap; src: url("fonts/ObviouslyDemo-NarrowMedium.otf") format("opentype"); }
+@font-face { font-family: "Ob Narrow"; font-weight: 600; font-display: swap; src: url("fonts/ObviouslyDemo-NarrowSemibold.otf") format("opentype"); }
 :root {
   --paper: #ffffff;
   --ink: #4a3e3e;
@@ -358,16 +361,72 @@ html.leaving body > .site { opacity: 0; transform: translateY(-8px); }
   .gframe { padding: 4px; border-radius: 18px; }
   .slide { border-radius: 14px; }
 }
+
+/* ---------- About panel ----------
+   Timing copied from dylan.camera's Info panel (its "Snappy" preset), all on one ease, cubic-bezier(.85, 0, .15, 1):
+   open  — a one-line strip sweeps out left to right (0.25s, twice the original's speed) while the cells already
+           start growing downward; the cells then drop open one after another
+           (0.625s each, 0.125s apart); text fades in 0.125s after its cell starts moving: the bio word by word
+           (0.625s fade, 7ms apart), the other cells line by line (0.0625s apart).
+   close — the opening in reverse: the last cell folds first (text fading as it goes), and the strip sweeps back
+           right to left (0.25s) over the end of the folding.
+   The panel floats over the case studies (it does not push them down). Esc or a click outside closes it. */
+main { position: relative; }
+.about {
+  position: absolute; top: 24px; left: 0; right: 0; z-index: 20;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: stretch;   /* both columns end on one line */
+  font-family: "Ob Reg", "Archivo", system-ui, sans-serif; font-weight: 400;
+  font-size: 16px; line-height: 25px; letter-spacing: -0.03em; color: var(--dim);
+}
+.about[hidden] { display: none; }
+.about-col { display: flex; flex-direction: column; gap: 10px; }
+.about-col > .about-cell:first-child { flex: 1 0 auto; }   /* the bio takes any extra height so the columns match */
+.about-cell { background: #f8f5f5; border-radius: 12px; padding: 12px; overflow: hidden; }
+.about-cell p { margin: 0; }
+.about-links { display: grid; }
+.about-links a, .about-co { font-family: "Ob Narrow", "Archivo", system-ui, sans-serif; font-stretch: 80%; }
+.about-links a { font-weight: 600; color: var(--dim); text-decoration: none; justify-self: start; transition: color .2s ease; }
+.about-links a:hover, .about-links a:focus-visible { color: var(--ink); }
+.about-cell h3 { margin: 0 0 34px; font: inherit; font-family: var(--f-ext); font-weight: 700; font-stretch: 125%; }
+.about-xp { display: grid; }
+.about-xp div { display: flex; justify-content: space-between; gap: 16px; }
+.about-co { font-weight: 500; text-align: right; }
+.about .w { display: inline-block; }
+.nav a[aria-expanded="true"] { color: var(--ink); }
+@media (max-width: 639px) {
+  .about { grid-template-columns: 1fr; }
+  .about-cell h3 { margin-bottom: 16px; }
+}
 </style>
 
 <div class="site">
 <header class="top">
   <a class="logo" href="#">samirad.</a>
-  <nav class="nav"><a href="#">about</a><a href="#">befriend</a></nav>
+  <nav class="nav"><a href="#about" aria-expanded="false" aria-controls="about">about</a><a href="#">befriend</a></nav>
   <a class="blob" href="#" aria-label="samirad. home" aria-describedby="blob-tip"><img src="img/blob.svg" alt=""><canvas aria-hidden="true"></canvas><span class="tip" id="blob-tip" role="tooltip">Start voice <kbd aria-label="Control Shift V">⌃⇧V</kbd></span></a>
 </header>
 
 <main>
+  <section class="about" id="about" aria-label="About Samira" hidden>
+    <div class="about-col">
+      <div class="about-cell"><p data-words>Samira is a designer who thinks in primitives. She worked as a software engineer in her past lives and like to explain concepts with an analogy.</p></div>
+      <div class="about-cell about-links">
+        <a href="mailto:samiradg105@gmail.com" data-words>Email</a>
+        <a href="https://www.linkedin.com/in/smrdang/" target="_blank" rel="noopener" data-words>LinkedIn</a>
+        <a href="https://x.com/p_ssmir" target="_blank" rel="noopener" data-words>X</a>
+      </div>
+    </div>
+    <div class="about-cell">
+      <h3 data-words>Experience</h3>
+      <div class="about-xp">
+        <div><span data-words>Founding designer</span><span class="about-co" data-words>AngelTrade</span></div>
+        <div><span data-words>Software engineer</span><span class="about-co" data-words>Citibank</span></div>
+        <div><span data-words>Software engineer intern</span><span class="about-co" data-words>Citibank</span></div>
+        <div><span data-words>Frontend engineer</span><span class="about-co" data-words>LSM</span></div>
+        <div><span data-words>Graphic designer</span><span class="about-co" data-words>Independent practice</span></div>
+      </div>
+    </div>
+  </section>
   <article class="project">
     <p class="eyebrow">SHIPPED 2026</p>
     <h2><a class="title-link" href="context-cards.html">Understand language <b>in context</b></a></h2>
@@ -888,6 +947,89 @@ document.querySelectorAll('a[href="#"]').forEach(function (a) { a.addEventListen
   document.addEventListener("pointerleave", function () { el.classList.remove("on"); });
   addEventListener("pointerdown", function () { el.classList.add("press"); });
   addEventListener("pointerup", function () { el.classList.remove("press"); });
+})();
+</script>
+<script>
+/* About panel (see the CSS for the timeline). */
+(function () {
+  var btn = document.querySelector('.nav a[aria-controls="about"]'), panel = document.getElementById("about");
+  if (!btn || !panel) return;
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var EASE = "cubic-bezier(.85, 0, .15, 1)", BAR = 25;
+  var SWEEP_IN_MS = 250, CELL_MS = 625, CELL_STEP_MS = 125, TEXT_DELAY_MS = 125, TEXT_MS = 625, LINE_STEP_MS = 62.5, WORD_STEP_MS = 7;
+  var TEXT_OUT_MS = 375, AUTO_CLOSE_MS = 30000;   // closes itself after 30 seconds
+  var cells = [].slice.call(panel.querySelectorAll(".about-cell"));
+  // What fades in each cell: the bio word by word, everything else line by line.
+  var units = new Map();
+  cells.forEach(function (c) {
+    var bio = c.querySelector("p[data-words]");
+    if (bio) {
+      var parts = bio.textContent.trim().split(/\s+/), list = [];
+      bio.textContent = "";
+      parts.forEach(function (w, i) {
+        var s = document.createElement("span"); s.className = "w"; s.textContent = w;
+        bio.appendChild(s); list.push(s);
+        if (i < parts.length - 1) bio.appendChild(document.createTextNode(" "));
+      });
+      units.set(c, { els: list, step: WORD_STEP_MS });
+    } else units.set(c, { els: [].slice.call(c.querySelectorAll("a, h3, .about-xp > div")), step: LINE_STEP_MS });
+  });
+  // Cells in visual order (left column first, top to bottom), and whether each sits on the top row:
+  // top-row cells start as the one-line strip, the cells below grow from nothing.
+  function order() {
+    var top = Math.min.apply(null, cells.map(function (c) { return c.getBoundingClientRect().top; }));
+    return cells.map(function (c) { var r = c.getBoundingClientRect(); return { el: c, x: r.left, y: r.top, first: r.top - top < 2 }; })
+      .sort(function (a, b) { return a.x - b.x || a.y - b.y; });
+  }
+  var CLIP_OPEN = "inset(-8px -10px -24px -10px)", CLIP_SHUT = "inset(-8px 100% -24px -10px)";
+  var start = function (it) { return it.first ? { height: BAR + "px" } : { height: "0px", paddingTop: "0px", paddingBottom: "0px", opacity: 0 }; };   // fading too, so a sub-pixel sliver never shows
+  var open = false, anims = [], timer = null, auto = null;
+  // Auto-close: 30 seconds after opening, but never while the pointer is over the panel (the countdown restarts on leaving).
+  function arm() { clearTimeout(auto); auto = setTimeout(hide, AUTO_CLOSE_MS); }
+  panel.addEventListener("pointerenter", function () { clearTimeout(auto); });
+  panel.addEventListener("pointerleave", function () { if (open) arm(); });
+  function clear() { anims.forEach(function (a) { a.cancel(); }); anims = []; clearTimeout(timer); }
+  var run = function (el, frames, opts) { var a = el.animate(frames, Object.assign({ easing: EASE }, opts)); anims.push(a); return a; };
+  function show() {
+    clear(); open = true; btn.setAttribute("aria-expanded", "true");
+    panel.hidden = false; arm();
+    if (reduce) return;
+    run(panel, [{ clipPath: CLIP_SHUT }, { clipPath: CLIP_OPEN }], { duration: SWEEP_IN_MS, fill: "backwards" });
+    // Measure every cell's final (matched) height before anything moves, and hold each cell there until the whole
+    // panel is open: if one cell were let go early, the columns would re-match mid-animation and the bio would jump.
+    var list = order().map(function (it) { it.full = { height: it.el.offsetHeight + "px", paddingTop: "12px", paddingBottom: "12px", opacity: 1 }; return it; });
+    var heights = [], end = (list.length - 1) * CELL_STEP_MS + CELL_MS;
+    list.forEach(function (it, i) {
+      var c = it.el, at = i * CELL_STEP_MS;
+      run(c, [start(it), start(it)], { duration: at, fill: "none" });                 // later cells hold as a strip until their turn
+      heights.push(run(c, [start(it), it.full], { duration: CELL_MS, delay: at, fill: "forwards" }));
+      var u = units.get(c);
+      u.els.forEach(function (el, k) {
+        run(el, [{ opacity: 0 }, { opacity: 1 }], { duration: TEXT_MS, delay: at + TEXT_DELAY_MS + k * u.step, fill: "backwards" });
+      });
+    });
+    timer = setTimeout(function () { heights.forEach(function (a) { a.cancel(); }); }, end);   // hand the heights back to the layout
+  }
+  function hide() {
+    if (!open) return;
+    clear(); clearTimeout(auto); open = false; btn.setAttribute("aria-expanded", "false");
+    if (reduce) { panel.hidden = true; return; }
+    // The opening played backwards: the last cell folds first, 0.125s apart, and the strip sweeps back right to left
+    // (0.25s) over the end of the folding, so the two finish together.
+    // Measure all cells first (see show), so a cell that has started folding does not change the others' heights.
+    var list = order().reverse().map(function (it) { it.full = { height: it.el.offsetHeight + "px", paddingTop: "12px", paddingBottom: "12px", opacity: 1 }; return it; });
+    var end = (list.length - 1) * CELL_STEP_MS + CELL_MS;
+    list.forEach(function (it, i) {
+      var c = it.el, at = i * CELL_STEP_MS;
+      run(c, [it.full, start(it)], { duration: CELL_MS, delay: at, fill: "both" });
+      units.get(c).els.forEach(function (el) { run(el, [{ opacity: 1 }, { opacity: 0 }], { duration: TEXT_OUT_MS, delay: at, fill: "both" }); });
+    });
+    run(panel, [{ clipPath: CLIP_OPEN }, { clipPath: CLIP_SHUT }], { duration: SWEEP_IN_MS, delay: end - SWEEP_IN_MS, fill: "both" });
+    timer = setTimeout(function () { clear(); panel.hidden = true; }, end);
+  }
+  btn.addEventListener("click", function (e) { e.preventDefault(); open ? hide() : show(); });
+  addEventListener("keydown", function (e) { if (e.key === "Escape" && open) { hide(); btn.focus(); } });
+  document.addEventListener("click", function (e) { if (open && !panel.contains(e.target) && e.target !== btn) hide(); });
 })();
 </script>
 <script src="spacing.js?v=2"></script>
